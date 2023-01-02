@@ -1,0 +1,93 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "CISv2",
+    "description": "CISv2 API",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://test.com",
+      "description": "CISv2 API"
+    }
+  ],
+  "paths": {
+    "/ricetta": {
+      "post": {
+        "summary": "Presa in carico della ricetta",
+        "operationId": "createRecipe",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ricettaBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ricetta presa in carico"
+          }
+        }
+      }
+    },
+    "/gruppoAmbiti": {
+      "get": {
+        "summary": "Lista del gruppo ambiti",
+        "operationId": "getGruppoAmbiti",
+        "responses": {
+          "200": {
+            "description": "Lista gruppo ambiti"
+          }
+        }
+      }
+    },
+    "/ambiti": {
+      "get": {
+        "summary": "Lista degli ambiti",
+        "operationId": "getAmbiti",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "id ambito",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista ambiti"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "assistito": {
+        "type": "object",
+        "properties": {
+          "codiceFiscale": {
+            "type": "string"
+          }
+        }
+      },
+      "ricettaBody": {
+        "type": "object",
+        "properties": {
+          "nre": {
+            "type": "string"
+          },
+          "assistito": {
+            "$ref": "#/components/schemas/assistito"
+          }
+        }
+      }
+    }
+  }
+}
