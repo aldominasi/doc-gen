@@ -28,7 +28,14 @@
         },
         "responses": {
           "200": {
-            "description": "Ricetta presa in carico"
+            "description": "Ricetta presa in carico",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ricettaResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -77,6 +84,77 @@
           }
         }
       },
+      "codiceMedico": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "DOC0003319220"
+          },
+          "type": {
+            "type": "string",
+            "example": "1"
+          }
+        }
+      },
+      "prestazioni": {
+        "type": "object",
+        "properties": {
+          "desPrestazione": {
+            "type": "string",
+            "example": "[89010.014] VISITA DI CONTROLLO CARDIOLOGICA"
+          },
+          "idPrestazione": {
+            "type": "string",
+            "example": "89010.014"
+          },
+          "codCatalogo": {
+            "type": "string",
+            "example": "89010.014"
+          },
+          "idOrder": {
+            "type": "string",
+            "example": "00"
+          },
+          "prenotabile": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "dataRicettaResponse": {
+        "type": "object",
+        "properties": {
+          "nre": {
+            "type": "string",
+            "example": "1500A1234567890"
+          },
+          "dataEmissioneRicetta": {
+            "type": "string",
+            "example": "2021-04-28T02:00:00Z"
+          },
+          "classePriorita": {
+            "type": "string",
+            "example": "P"
+          },
+          "codiceMedico": {
+            "$ref": "#/components/schemas/codiceMedico"
+          },
+          "codiceEsenzione": {
+            "type": "string",
+            "example": "NE00"
+          },
+          "prestazioni": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/prestazioni"
+            }
+          },
+          "asl": {
+            "type": "string"
+          }
+        }
+      },
       "ricettaBody": {
         "type": "object",
         "properties": {
@@ -85,6 +163,22 @@
           },
           "assistito": {
             "$ref": "#/components/schemas/assistito"
+          }
+        }
+      },
+      "ricettaResponse": {
+        "type": "object",
+        "properties": {
+          "stato": {
+            "type": "integer",
+            "example": 200
+          },
+          "errore": {
+            "type": "string",
+            "nullable": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/dataRicettaResponse"
           }
         }
       }
