@@ -175,7 +175,7 @@
           },
           "errore": {
             "type": "string",
-            "nullable": true
+            "description": "Il campo può essere null"
           },
           "data": {
             "$ref": "#/components/schemas/dataRicettaResponse"
