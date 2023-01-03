@@ -46,7 +46,14 @@
         "operationId": "getGruppoAmbiti",
         "responses": {
           "200": {
-            "description": "Lista gruppo ambiti"
+            "description": "Lista gruppo ambiti",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/gruppoAmbitiResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -68,7 +75,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Lista ambiti"
+            "description": "Lista ambiti",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ambitiResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -155,6 +169,86 @@
           }
         }
       },
+      "dataGruppoAmbiti": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "AREAGROUP_ID"
+          },
+          "name": {
+            "type": "string",
+            "example": "EDIT_NAME"
+          },
+          "entryDateTime": {
+            "type": "string",
+            "example": "2022-11-03T23:00:00Z"
+          },
+          "entryUserId": {
+            "type": "string",
+            "example": "1"
+          }
+        }
+      },
+      "dataAmbiti": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "105520"
+          },
+          "name": {
+            "type": "string",
+            "example": "ASL NAPOLI 1 - Y"
+          },
+          "startDateTime": {
+            "type": "string",
+            "example": "2022-11-03T23:00:00Z"
+          },
+          "endDate": {
+            "type": "string",
+            "example": "2022-11-03T23:00:00Z"
+          },
+          "details": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "example": []
+            }
+          },
+          "isPrivate": {
+            "type": "string",
+            "example": "N"
+          },
+          "code": {
+            "type": "string",
+            "example": "105520"
+          },
+          "type": {
+            "type": "number",
+            "example": 0
+          }
+        }
+      },
+      "gruppoAmbitiResponse": {
+        "type": "object",
+        "properties": {
+          "stato": {
+            "type": "integer",
+            "example": 200
+          },
+          "errore": {
+            "type": "string",
+            "description": "Il campo può essere null"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/dataGruppoAmbiti"
+            }
+          }
+        }
+      },
       "ricettaBody": {
         "type": "object",
         "properties": {
@@ -179,6 +273,25 @@
           },
           "data": {
             "$ref": "#/components/schemas/dataRicettaResponse"
+          }
+        }
+      },
+      "ambitiResponse": {
+        "type": "object",
+        "properties": {
+          "stato": {
+            "type": "integer",
+            "example": 200
+          },
+          "errore": {
+            "type": "string",
+            "description": "Il campo può essere null"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/dataAmbiti"
+            }
           }
         }
       }
