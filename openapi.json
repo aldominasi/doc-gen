@@ -89,6 +89,14 @@
     }
   },
   "components": {
+    "securitySchemes": {
+      "x-access-token": {
+        "type": "apiKey",
+        "name": "x-access-token",
+        "in": "header",
+        "description": "Tutte le richieste devono contenere il token di autenticazione"
+      }
+    },
     "schemas": {
       "assistito": {
         "type": "object",
@@ -296,5 +304,10 @@
         }
       }
     }
-  }
+  },
+  "security": [
+    {
+      "x-access-token": []
+    }
+  ]
 }
