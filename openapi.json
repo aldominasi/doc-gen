@@ -119,6 +119,19 @@
           }
         }
       },
+      "medico": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "example": "Mario"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Rossi"
+          }
+        }
+      },
       "prestazioni": {
         "type": "object",
         "properties": {
@@ -161,6 +174,9 @@
           },
           "codiceMedico": {
             "$ref": "#/components/schemas/codiceMedico"
+          },
+          "medico": {
+            "$ref": "#/components/schemas/medico"
           },
           "codiceEsenzione": {
             "type": "string",
