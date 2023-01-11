@@ -86,6 +86,24 @@
           }
         }
       }
+    },
+    "/annullaPrenotazioneSospesa": {
+      "delete": {
+        "summary": "Annulla prenotazione sospesa",
+        "operationId": "deletePrenotazioneSospesa",
+        "responses": {
+          "200": {
+            "description": "Prenotazione sospesa annullata",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/annullaPrenotazioneSospesaResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -174,9 +192,6 @@
           },
           "codiceMedico": {
             "$ref": "#/components/schemas/codiceMedico"
-          },
-          "medico": {
-            "$ref": "#/components/schemas/medico"
           },
           "codiceEsenzione": {
             "type": "string",
@@ -316,6 +331,23 @@
             "items": {
               "$ref": "#/components/schemas/dataAmbiti"
             }
+          }
+        }
+      },
+      "annullaPrenotazioneSospesaResponse": {
+        "type": "object",
+        "properties": {
+          "stato": {
+            "type": "integer",
+            "example": 200
+          },
+          "errore": {
+            "type": "string",
+            "description": "Il campo può essere null"
+          },
+          "data": {
+            "type": "string",
+            "example": "La prenotazione in sospeso è stata annullata correttamente"
           }
         }
       }
