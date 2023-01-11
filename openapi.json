@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "https://test.com",
+      "url": "https://apigw-collaudo.cdp-sanita-coll.soresa.it/ecupt/api/v2.0/appecupt/gpi2",
       "description": "CISv2 API"
     }
   ],
