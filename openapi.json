@@ -70,7 +70,8 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "example": "AGNA1"
           }
         ],
         "responses": {
@@ -117,7 +118,8 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "example": "AGNA1"
           }
         ],
         "responses": {
@@ -324,60 +326,63 @@
       "proposteAmbiti": {
         "type": "array",
         "items": {
-          "type": "object",
-          "properties": {
-            "idAgenda": {
-              "type": "string",
-              "example": "717421"
-            },
-            "codiceAgenda": {
-              "type": "string",
-              "example": "717421"
-            },
-            "nomeAgenda": {
-              "type": "string",
-              "example": "PROVA TOTEM ASL NAPOLI 2 NORD 0"
-            },
-            "idPrestazione": {
-              "type": "string",
-              "example": "89010.014"
-            },
-            "desPrestazione": {
-              "type": "string",
-              "example": "VISITA DI CONTROLLO CARDIOLOGICA"
-            },
-            "idSede": {
-              "type": "string",
-              "example": "1831920"
-            },
-            "desSede": {
-              "type": "string",
-              "example": "DISTRETTO 41 - FRATTAMAGGIORE -"
-            },
-            "indirizzoSede": {
-              "type": "string",
-              "example": "VIA PADRE VERGARA MARIO"
-            },
-            "idUnitaOperativa": {
-              "type": "string",
-              "example": "NA20510689"
-            },
-            "dataAppuntamento": {
-              "type": "string",
-              "example": "16/01/2023"
-            },
-            "oraAppuntamento": {
-              "type": "string",
-              "example": "10:00"
-            },
-            "idOrdine": {
-              "type": "string",
-              "example": "00"
-            },
-            "combinazioni": {
-              "type": "string",
-              "example": "AA"
-            }
+          "$ref": "#/components/schemas/propostaAmbitoObject"
+        }
+      },
+      "propostaAmbitoObject": {
+        "type": "object",
+        "properties": {
+          "idAgenda": {
+            "type": "string",
+            "example": "717421"
+          },
+          "codiceAgenda": {
+            "type": "string",
+            "example": "717421"
+          },
+          "nomeAgenda": {
+            "type": "string",
+            "example": "PROVA TOTEM ASL NAPOLI 2 NORD 0"
+          },
+          "idPrestazione": {
+            "type": "string",
+            "example": "89010.014"
+          },
+          "desPrestazione": {
+            "type": "string",
+            "example": "VISITA DI CONTROLLO CARDIOLOGICA"
+          },
+          "idSede": {
+            "type": "string",
+            "example": "1831920"
+          },
+          "desSede": {
+            "type": "string",
+            "example": "DISTRETTO 41 - FRATTAMAGGIORE -"
+          },
+          "indirizzoSede": {
+            "type": "string",
+            "example": "VIA PADRE VERGARA MARIO"
+          },
+          "idUnitaOperativa": {
+            "type": "string",
+            "example": "NA20510689"
+          },
+          "dataAppuntamento": {
+            "type": "string",
+            "example": "16/01/2023"
+          },
+          "oraAppuntamento": {
+            "type": "string",
+            "example": "10:00"
+          },
+          "idOrdine": {
+            "type": "string",
+            "example": "00"
+          },
+          "combinazioni": {
+            "type": "string",
+            "example": "AA"
           }
         }
       },
