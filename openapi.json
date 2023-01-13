@@ -1,497 +1,347 @@
-{
-  "openapi": "3.0.3",
-  "info": {
-    "title": "CISv2",
-    "description": "CISv2 API",
-    "version": "1.0.0"
-  },
-  "servers": [
-    {
-      "url": "https://apigw-collaudo.cdp-sanita-coll.soresa.it/ecupt/api/v2.0/appecupt/gpi2",
-      "description": "CISv2 API"
-    }
-  ],
-  "paths": {
-    "/ricetta": {
-      "post": {
-        "summary": "Presa in carico della ricetta",
-        "operationId": "createRecipe",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ricettaBody"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Ricetta presa in carico",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ricettaResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/gruppoAmbiti": {
-      "get": {
-        "summary": "Lista del gruppo ambiti",
-        "operationId": "getGruppoAmbiti",
-        "responses": {
-          "200": {
-            "description": "Lista gruppo ambiti",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/gruppoAmbitiResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/ambiti": {
-      "get": {
-        "summary": "Lista degli ambiti",
-        "operationId": "getAmbiti",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "query",
-            "description": "id gruppo ambiti",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "AGNA1"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Lista ambiti",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ambitiResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/annullaPrenotazioneSospesa": {
-      "delete": {
-        "summary": "Annulla prenotazione sospesa",
-        "operationId": "deletePrenotazioneSospesa",
-        "responses": {
-          "200": {
-            "description": "Prenotazione sospesa annullata",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/annullaPrenotazioneSospesaResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/proposteAmbiti": {
-      "post": {
-        "summary": "Proposte ambiti",
-        "operationId": "createProposteAmbiti",
-        "parameters": [
-          {
-            "name": "idGruppoAmbito",
-            "in": "query",
-            "description": "id ambito",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "AGNA1"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Proposte ambiti",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/proposteAmbitiResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "components": {
-    "securitySchemes": {
-      "x-access-token": {
-        "type": "apiKey",
-        "name": "x-access-token",
-        "in": "header",
-        "description": "Tutte le richieste devono contenere il token di autenticazione"
-      }
-    },
-    "schemas": {
-      "assistito": {
-        "type": "object",
-        "properties": {
-          "codiceFiscale": {
-            "type": "string"
-          }
-        }
-      },
-      "codiceMedico": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "example": "DOC0003319220"
-          },
-          "type": {
-            "type": "string",
-            "example": "1"
-          }
-        }
-      },
-      "medico": {
-        "type": "object",
-        "properties": {
-          "firstName": {
-            "type": "string",
-            "example": "Mario"
-          },
-          "lastName": {
-            "type": "string",
-            "example": "Rossi"
-          }
-        }
-      },
-      "prestazioni": {
-        "type": "object",
-        "properties": {
-          "desPrestazione": {
-            "type": "string",
-            "example": "[89010.014] VISITA DI CONTROLLO CARDIOLOGICA"
-          },
-          "idPrestazione": {
-            "type": "string",
-            "example": "89010.014"
-          },
-          "codCatalogo": {
-            "type": "string",
-            "example": "89010.014"
-          },
-          "idOrder": {
-            "type": "string",
-            "example": "00"
-          },
-          "prenotabile": {
-            "type": "boolean",
-            "example": true
-          }
-        }
-      },
-      "dataRicettaResponse": {
-        "type": "object",
-        "properties": {
-          "nre": {
-            "type": "string",
-            "example": "1500A1234567890"
-          },
-          "dataEmissioneRicetta": {
-            "type": "string",
-            "example": "2021-04-28T02:00:00Z"
-          },
-          "classePriorita": {
-            "type": "string",
-            "example": "P"
-          },
-          "codiceMedico": {
-            "$ref": "#/components/schemas/codiceMedico"
-          },
-          "codiceEsenzione": {
-            "type": "string",
-            "example": "NE00"
-          },
-          "prestazioni": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/prestazioni"
-            }
-          },
-          "asl": {
-            "type": "string"
-          }
-        }
-      },
-      "dataGruppoAmbiti": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "example": "AREAGROUP_ID"
-          },
-          "name": {
-            "type": "string",
-            "example": "EDIT_NAME"
-          },
-          "entryDateTime": {
-            "type": "string",
-            "example": "2022-11-03T23:00:00Z"
-          },
-          "entryUserId": {
-            "type": "string",
-            "example": "1"
-          }
-        }
-      },
-      "dataAmbiti": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "example": "105520"
-          },
-          "name": {
-            "type": "string",
-            "example": "ASL NAPOLI 1 - Y"
-          },
-          "startDateTime": {
-            "type": "string",
-            "example": "2022-11-03T23:00:00Z"
-          },
-          "endDate": {
-            "type": "string",
-            "example": "2022-11-03T23:00:00Z"
-          },
-          "details": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "example": []
-            }
-          },
-          "isPrivate": {
-            "type": "string",
-            "example": "N"
-          },
-          "code": {
-            "type": "string",
-            "example": "105520"
-          },
-          "type": {
-            "type": "number",
-            "example": 0
-          }
-        }
-      },
-      "dataProposteAmbiti": {
-        "type": "object",
-        "properties": {
-          "idAmbito": {
-            "type": "string",
-            "example": "100923"
-          },
-          "idEnte": {
-            "type": "string",
-            "example": "231820"
-          },
-          "ente": {
-            "type": "string",
-            "example": "ASL NAPOLI 2 NORD"
-          },
-          "proposte": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/proposteAmbiti"
-            }
-          }
-        }
-      },
-      "proposteAmbiti": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/propostaAmbitoObject"
-        }
-      },
-      "propostaAmbitoObject": {
-        "type": "object",
-        "properties": {
-          "idAgenda": {
-            "type": "string",
-            "example": "717421"
-          },
-          "codiceAgenda": {
-            "type": "string",
-            "example": "717421"
-          },
-          "nomeAgenda": {
-            "type": "string",
-            "example": "PROVA TOTEM ASL NAPOLI 2 NORD 0"
-          },
-          "idPrestazione": {
-            "type": "string",
-            "example": "89010.014"
-          },
-          "desPrestazione": {
-            "type": "string",
-            "example": "VISITA DI CONTROLLO CARDIOLOGICA"
-          },
-          "idSede": {
-            "type": "string",
-            "example": "1831920"
-          },
-          "desSede": {
-            "type": "string",
-            "example": "DISTRETTO 41 - FRATTAMAGGIORE -"
-          },
-          "indirizzoSede": {
-            "type": "string",
-            "example": "VIA PADRE VERGARA MARIO"
-          },
-          "idUnitaOperativa": {
-            "type": "string",
-            "example": "NA20510689"
-          },
-          "dataAppuntamento": {
-            "type": "string",
-            "example": "16/01/2023"
-          },
-          "oraAppuntamento": {
-            "type": "string",
-            "example": "10:00"
-          },
-          "idOrdine": {
-            "type": "string",
-            "example": "00"
-          },
-          "combinazioni": {
-            "type": "string",
-            "example": "AA"
-          }
-        }
-      },
-      "gruppoAmbitiResponse": {
-        "type": "object",
-        "properties": {
-          "stato": {
-            "type": "integer",
-            "example": 200
-          },
-          "errore": {
-            "type": "string",
-            "description": "Il campo può essere null"
-          },
-          "data": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/dataGruppoAmbiti"
-            }
-          }
-        }
-      },
-      "ricettaBody": {
-        "type": "object",
-        "properties": {
-          "nre": {
-            "type": "string"
-          },
-          "assistito": {
-            "$ref": "#/components/schemas/assistito"
-          }
-        }
-      },
-      "ricettaResponse": {
-        "type": "object",
-        "properties": {
-          "stato": {
-            "type": "integer",
-            "example": 200
-          },
-          "errore": {
-            "type": "string",
-            "description": "Il campo può essere null"
-          },
-          "data": {
-            "$ref": "#/components/schemas/dataRicettaResponse"
-          }
-        }
-      },
-      "ambitiResponse": {
-        "type": "object",
-        "properties": {
-          "stato": {
-            "type": "integer",
-            "example": 200
-          },
-          "errore": {
-            "type": "string",
-            "description": "Il campo può essere null"
-          },
-          "data": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/dataAmbiti"
-            }
-          }
-        }
-      },
-      "annullaPrenotazioneSospesaResponse": {
-        "type": "object",
-        "properties": {
-          "stato": {
-            "type": "integer",
-            "example": 200
-          },
-          "errore": {
-            "type": "string",
-            "description": "Il campo può essere null"
-          },
-          "data": {
-            "type": "string",
-            "example": "La prenotazione in sospeso è stata annullata correttamente"
-          }
-        }
-      },
-      "proposteAmbitiResponse": {
-        "type": "object",
-        "properties": {
-          "stato": {
-            "type": "integer",
-            "example": 200
-          },
-          "errore": {
-            "type": "string",
-            "description": "Il campo può essere null"
-          },
-          "data": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/dataProposteAmbiti"
-            }
-          }
-        }
-      }
-    }
-  },
-  "security": [
-    {
-      "x-access-token": []
-    }
-  ]
-}
+openapi: 3.0.3
+info:
+  title: CISv2
+  description: CISv2 API
+  version: 1.0.0
+servers:
+  - url: https://apigw-collaudo.cdp-sanita-coll.soresa.it/ecupt/api/v2.0/appecupt/gpi2
+    description: CISv2 API
+paths:
+  /ricetta:
+    post:
+      summary: Presa in carico della ricetta
+      operationId: createRecipe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ricettaBody'
+        required: true
+      responses:
+        '200':
+          description: Ricetta presa in carico
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ricettaResponse'
+  /gruppoAmbiti:
+    get:
+      summary: Lista del gruppo ambiti
+      operationId: getGruppoAmbiti
+      responses:
+        '200':
+          description: Lista gruppo ambiti
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/gruppoAmbitiResponse'
+  /ambiti:
+    get:
+      summary: Lista degli ambiti
+      operationId: getAmbiti
+      parameters:
+        - name: id
+          in: query
+          description: id gruppo ambiti
+          required: true
+          schema:
+            type: string
+          example: "AGNA1"
+      responses:
+        '200':
+          description: Lista ambiti
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ambitiResponse'
+  /annullaPrenotazioneSospesa:
+    delete:
+      summary: Annulla prenotazione sospesa
+      operationId: deletePrenotazioneSospesa
+      responses:
+        '200':
+          description: Prenotazione sospesa annullata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/annullaPrenotazioneSospesaResponse'
+  /proposteAmbiti:
+    post:
+      summary: Proposte ambiti
+      operationId: createProposteAmbiti
+      parameters:
+        - name: idGruppoAmbito
+          in: query
+          description: id ambito
+          required: true
+          schema:
+            type: string
+          example: "AGNA1"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                codiceFiscale:
+                  type: string
+                  example: "VLNFNS80A01H501U"
+        required: true
+      responses:
+        '200':
+          description: Proposte ambiti
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/proposteAmbitiResponse'
+components:
+  securitySchemes:
+    x-access-token:
+      type: apiKey
+      name: x-access-token
+      in: header
+      description: Tutte le richieste devono contenere il token di autenticazione
+  schemas:
+    assistito:
+      type: object
+      properties:
+        codiceFiscale:
+          type: string
+    codiceMedico:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "DOC0003319220"
+        type:
+          type: string
+          example: "1"
+    medico:
+      type: object
+      properties:
+        firstName:
+          type: string
+          example: "Mario"
+        lastName:
+          type: string
+          example: "Rossi"
+    prestazioni:
+      type: object
+      properties:
+        desPrestazione:
+          type: string
+          example: "[89010.014] VISITA DI CONTROLLO CARDIOLOGICA"
+        idPrestazione:
+          type: string
+          example: "89010.014"
+        codCatalogo:
+          type: string
+          example: "89010.014"
+        idOrder:
+          type: string
+          example: "00"
+        prenotabile:
+          type: boolean
+          example: true
+    dataRicettaResponse:
+      type: object
+      properties:
+        nre:
+          type: string
+          example: "1500A1234567890"
+        dataEmissioneRicetta:
+          type: string
+          example: "2021-04-28T02:00:00Z"
+        classePriorita:
+          type: string
+          example: "P"
+        codiceMedico:
+          $ref: '#/components/schemas/codiceMedico'
+        codiceEsenzione:
+          type: string
+          example: "NE00"
+        prestazioni:
+          type: array
+          items:
+            $ref: '#/components/schemas/prestazioni'
+        asl:
+          type: string
+    dataGruppoAmbiti:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "AREAGROUP_ID"
+        name:
+          type: string
+          example: "EDIT_NAME"
+        entryDateTime:
+          type: string
+          example: "2022-11-03T23:00:00Z"
+        entryUserId:
+          type: string
+          example: "1"
+    dataAmbiti:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "105520"
+        name:
+          type: string
+          example: "ASL NAPOLI 1 - Y"
+        startDateTime:
+          type: string
+          example: "2022-11-03T23:00:00Z"
+        endDate:
+          type: string
+          example: "2022-11-03T23:00:00Z"
+        details:
+          type: array
+          items:
+            type: string
+            example: []
+        isPrivate:
+          type: string
+          example: "N"
+        code:
+          type: string
+          example: "105520"
+        type:
+          type: number
+          example: 0
+    dataProposteAmbiti:
+      type: object
+      properties:
+        idAmbito:
+          type: string
+          example: "100923"
+        idEnte:
+          type: string
+          example: "231820"
+        ente:
+          type: string
+          example: "ASL NAPOLI 2 NORD"
+        proposte:
+          type: array
+          items:
+            $ref: '#/components/schemas/proposteAmbiti'
+    proposteAmbiti:
+      type: array
+      items:
+        $ref: '#/components/schemas/propostaAmbitoObject'
+    propostaAmbitoObject:
+      type: object
+      properties:
+          idAgenda:
+            type: string
+            example: "717421"
+          codiceAgenda:
+            type: string
+            example: "717421"
+          nomeAgenda:
+            type: string
+            example: "PROVA TOTEM ASL NAPOLI 2 NORD 0"
+          idPrestazione:
+            type: string
+            example: "89010.014"
+          desPrestazione:
+            type: string
+            example: "VISITA DI CONTROLLO CARDIOLOGICA"
+          idSede:
+            type: string
+            example: "1831920"
+          desSede:
+            type: string
+            example: "DISTRETTO 41 - FRATTAMAGGIORE -"
+          indirizzoSede:
+            type: string
+            example: "VIA PADRE VERGARA MARIO"
+          idUnitaOperativa:
+            type: string
+            example: "NA20510689"
+          dataAppuntamento:
+            type: string
+            example: "16/01/2023"
+          oraAppuntamento:
+            type: string
+            example: "10:00"
+          idOrdine:
+            type: string
+            example: "00"
+          combinazioni:
+            type: string
+            example: "AA"
+    gruppoAmbitiResponse:
+      type: object
+      properties:
+        stato:
+          type: integer
+          example: 200
+        errore:
+          type: string
+          description: Il campo può essere null
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/dataGruppoAmbiti'
+    ricettaBody:
+      type: object
+      properties:
+        nre:
+          type: string
+        assistito:
+          $ref: '#/components/schemas/assistito'
+    ricettaResponse:
+      type: object
+      properties:
+        stato:
+          type: integer
+          example: 200
+        errore:
+          type: string
+          description: Il campo può essere null
+        data:
+          $ref: '#/components/schemas/dataRicettaResponse'
+    ambitiResponse:
+      type: object
+      properties:
+        stato:
+          type: integer
+          example: 200
+        errore:
+          type: string
+          description: Il campo può essere null
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/dataAmbiti'
+    annullaPrenotazioneSospesaResponse:
+      type: object
+      properties:
+        stato:
+          type: integer
+          example: 200
+        errore:
+          type: string
+          description: Il campo può essere null
+        data:
+          type: string
+          example: "La prenotazione in sospeso è stata annullata correttamente"
+    proposteAmbitiResponse:
+      type: object
+      properties:
+        stato:
+          type: integer
+          example: 200
+        errore:
+          type: string
+          description: Il campo può essere null
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/dataProposteAmbiti'
+security:
+  - x-access-token: []
+
+
