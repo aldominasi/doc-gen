@@ -94,6 +94,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/proposteAmbitiResponse'
+  /primaDisponibilita:
+    post:
+      summary: Prima disponibilita
+      operationId: createPrimaDisponibilita
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/primaDisponibilitaBody'
+        required: true
+      responses:
+        '200':
+          description: Prima disponibilita
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/primaDisponibilitaResponse'
 components:
   securitySchemes:
     x-access-token:
@@ -272,6 +289,48 @@ components:
           combinazioni:
             type: string
             example: "AA"
+    dataPrimaDisponibilita:
+      type: object
+      properties:
+        idAgenda:
+          type: string
+          example: "226322"
+        codiceAgenda:
+          type: string
+          example: "226322"
+        nomeAgenda:
+          type: string
+          example: "SOLO SSN - TEST TELEMEDICINA"
+        idPrestazione:
+          type: string
+          example: "89010.014"
+        desPrestazione:
+          type: string
+          example: "VISITA DI CONTROLLO CARDIOLOGICA"
+        idSede:
+          type: string
+          example: "203520"
+        desSede:
+          type: string
+          example: "P.S.P. SANTA MARIA DI LORETO CRISPI"
+        indirizzoSede:
+          type: string
+          example: "VIA PORTAMEDINA, 80134 NAPOLI NA, ITALIA"
+        idUnitaOperativa:
+          type: string
+          example: "125822"
+        dataAppuntamento:
+          type: string
+          example: "16/01/2023"
+        oraAppuntamento:
+          type: string
+          example: "08:00"
+        idOrdine:
+          type: string
+          example: "00"
+        combinazioni:
+          type: string
+          example: "AA"
     gruppoAmbitiResponse:
       type: object
       properties:
@@ -341,7 +400,35 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/dataProposteAmbiti'
+    primaDisponibilitaBody:
+      type: object
+      properties:
+        idAmbito:
+          type: string
+          example: "400923"
+        idEnte:
+          type: string
+          example: "102820"
+        codiceFiscale:
+          type: string
+          example: "VLNFNS80A01H501U"
+        prestazioni:
+          type: array
+          items:
+            type: string
+            example: "89010.014, 89520.001"
+    primaDisponibilitaResponse:
+      type: object
+      properties:
+        stato:
+          type: integer
+          example: 200
+        errore:
+          type: string
+          description: Il campo può essere null
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/dataPrimaDisponibilita'
 security:
   - x-access-token: []
-
-
