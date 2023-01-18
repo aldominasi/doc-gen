@@ -229,6 +229,9 @@ components:
         dataEmissioneRicetta:
           type: string
           example: "2021-04-28T02:00:00Z"
+        dataScadenzaRicetta:
+          type: string
+          example: "2021-05-28T02:00:00Z"
         classePriorita:
           type: string
           example: "P"
@@ -572,8 +575,17 @@ components:
           type: string
           description: Il campo può essere null
         data:
-          type: string
-          example: "La prenotazione è stata confermata correttamente"
+          type: object
+          properties:
+            messaggio:
+              type: string
+              example: "La prenotazione è stata confermata correttamente"
+            patientId:
+              type: string
+              example: "2020001046"
+            idTransazione:
+              type: string
+              example: "18901823"
     erogatoriAmbitoResponse:
       type: object
       properties:
