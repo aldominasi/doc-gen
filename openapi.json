@@ -54,6 +54,44 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ambitiResponse'
+  /erogatoriAmbito:
+    get:
+      summary: Lista degli erogatori per ambito
+      operationId: getErogatoriAmbito
+      parameters:
+        - name: idAmbito
+          in: query
+          description: id ambito
+          required: true
+          schema:
+            type: string
+          example: "100923"
+      responses:
+        '200':
+          description: Lista erogatori ambito
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/erogatoriAmbitoResponse'
+  /sediErogatore:
+    get:
+      summary: Lista delle sedi erogatore
+      operationId: getSediErogatore
+      parameters:
+        - name: idEnte
+          in: query
+          description: id ente
+          required: true
+          schema:
+            type: string
+          example: "231820"
+      responses:
+        '200':
+          description: Lista sedi erogatore
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sediErogatoreResponse'
   /annullaPrenotazioneSospesa:
     delete:
       summary: Annulla prenotazione sospesa
@@ -86,6 +124,11 @@ paths:
                 codiceFiscale:
                   type: string
                   example: "VLNFNS80A01H501U"
+                prestazioni:
+                  type: array
+                  items:
+                    type: string
+                    example: "89010.014, 89520.001"
         required: true
       responses:
         '200':
@@ -111,6 +154,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/primaDisponibilitaResponse'
+  /confermaPrenotazione:
+    post:
+      summary: Conferma prenotazione
+      operationId: createConfermaPrenotazione
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/confermaPrenotazioneBody'
+        required: true
+      responses:
+        '200':
+          description: Conferma prenotazione
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/confermaPrenotazioneResponse'
 components:
   securitySchemes:
     x-access-token:
@@ -250,45 +310,113 @@ components:
     propostaAmbitoObject:
       type: object
       properties:
-          idAgenda:
-            type: string
-            example: "717421"
-          codiceAgenda:
-            type: string
-            example: "717421"
-          nomeAgenda:
-            type: string
-            example: "PROVA TOTEM ASL NAPOLI 2 NORD 0"
-          idPrestazione:
-            type: string
-            example: "89010.014"
-          desPrestazione:
-            type: string
-            example: "VISITA DI CONTROLLO CARDIOLOGICA"
-          idSede:
-            type: string
-            example: "1831920"
-          desSede:
-            type: string
-            example: "DISTRETTO 41 - FRATTAMAGGIORE -"
-          indirizzoSede:
-            type: string
-            example: "VIA PADRE VERGARA MARIO"
-          idUnitaOperativa:
-            type: string
-            example: "NA20510689"
-          dataAppuntamento:
-            type: string
-            example: "16/01/2023"
-          oraAppuntamento:
-            type: string
-            example: "10:00"
-          idOrdine:
-            type: string
-            example: "00"
-          combinazioni:
-            type: string
-            example: "AA"
+        idAgenda:
+          type: string
+          example: "717421"
+        codiceAgenda:
+          type: string
+          example: "717421"
+        nomeAgenda:
+          type: string
+          example: "PROVA TOTEM ASL NAPOLI 2 NORD 0"
+        idPrestazione:
+          type: string
+          example: "89010.014"
+        desPrestazione:
+          type: string
+          example: "VISITA DI CONTROLLO CARDIOLOGICA"
+        idSede:
+          type: string
+          example: "1831920"
+        desSede:
+          type: string
+          example: "DISTRETTO 41 - FRATTAMAGGIORE -"
+        indirizzoSede:
+          type: string
+          example: "VIA PADRE VERGARA MARIO"
+        idUnitaOperativa:
+          type: string
+          example: "NA20510689"
+        dataAppuntamento:
+          type: string
+          example: "16/01/2023"
+        oraAppuntamento:
+          type: string
+          example: "10:00"
+        idOrdine:
+          type: string
+          example: "00"
+        combinazioni:
+          type: array
+          items:
+            $ref: '#/components/schemas/combinazioni'
+    confermaPrenotazioneBody:
+      type: object
+      properties:
+        codiceFiscale:
+          type: string
+          example: "VLNFNS80A01H501U"
+        idEnte:
+          type: string
+          example: "231820"
+        appuntamenti:
+          type: array
+          items:
+            $ref: '#/components/schemas/dataAppuntamentiConfermaPrenotazioneBody'
+    dataAppuntamentiConfermaPrenotazioneBody:
+      type: object
+      properties:
+        idAgenda:
+          type: string
+          example: "108121"
+        codiceAgenda:
+          type: string
+          example: "108121"
+        nomeAgenda:
+          type: string
+          example: "CARDIOLOGICA CRISPI - TEST ALMAVIVA"
+        idPrestazione:
+          type: string
+          example: "89520.001"
+        desPrestazione:
+          type: string
+          example: "ELETTROCARDIOGRAMMA"
+        desAmbulatorio:
+          type: string
+          example: "TELEMEDICINA TEST - VIA PORTAMEDINA, 80134 NAPOLI NA, ITALIA"
+        idSede:
+          type: string
+          example: "203520"
+        desSede:
+          type: string
+          example: "P.S.P. SANTA MARIA DI LORETO CRISPI"
+        indirizzoSede:
+          type: string
+          example: "VIA PORTAMEDINA, 80134 NAPOLI NA, ITALIA"
+        idUnitaOperativa:
+          type: string
+          example: "U2046893"
+        dataAppuntamento:
+          type: string
+          example: "16/01/2023"
+        oraAppuntamento:
+          type: string
+          example: "19:00"
+        idOrdine:
+          type: string
+          example: "11"
+        combinazioni:
+          type: array
+          items:
+            $ref: '#/components/schemas/combinazioni'
+    combinazioni:
+      type: object
+      properties:
+        requestId:
+          type: array
+          items:
+            example: "00, 01"
+            description: Il campo può essere null
     dataPrimaDisponibilita:
       type: object
       properties:
@@ -307,6 +435,9 @@ components:
         desPrestazione:
           type: string
           example: "VISITA DI CONTROLLO CARDIOLOGICA"
+        desAmbulatorio:
+          type: string
+          example: "TELEMEDICINA TEST - VIA PORTAMEDINA, 80134 NAPOLI NA, ITALIA"
         idSede:
           type: string
           example: "203520"
@@ -329,8 +460,9 @@ components:
           type: string
           example: "00"
         combinazioni:
-          type: string
-          example: "AA"
+          type: array
+          items:
+            $ref: '#/components/schemas/combinazioni'
     gruppoAmbitiResponse:
       type: object
       properties:
@@ -430,5 +562,57 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/dataPrimaDisponibilita'
+    confermaPrenotazioneResponse:
+      type: object
+      properties:
+        stato:
+          type: integer
+          example: 200
+        errore:
+          type: string
+          description: Il campo può essere null
+        data:
+          type: string
+          example: "La prenotazione è stata confermata correttamente"
+    erogatoriAmbitoResponse:
+      type: object
+      properties:
+        stato:
+          type: integer
+          example: 200
+        errore:
+          type: string
+          description: Il campo può essere null
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                example: "231820"
+              name:
+                type: string
+                example: "ASL NAPOLI 2 NORD"
+    sediErogatoreResponse:
+      type: object
+      properties:
+        stato:
+          type: integer
+          example: 200
+        errore:
+          type: string
+          description: Il campo può essere null
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                example: "131920"
+              name:
+                type: string
+                example: "DISTRETTO 35 - BACOLI -"
 security:
   - x-access-token: []
