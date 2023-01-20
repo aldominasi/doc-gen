@@ -349,6 +349,9 @@ components:
         idOrdine:
           type: string
           example: "00"
+        durata:
+          type: integer
+          example: 30
         combinazioni:
           type: array
           items:
@@ -462,6 +465,9 @@ components:
         idOrdine:
           type: string
           example: "00"
+        durata:
+          type: integer
+          example: 30
         combinazioni:
           type: array
           items:
