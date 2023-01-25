@@ -162,6 +162,9 @@ paths:
             schema:
               type: object
               properties:
+                idAmbito:
+                  type: string
+                  example: "100923"
                 codiceFiscale:
                   type: string
                   example: "VLNFNS80A01H501U"
@@ -189,12 +192,11 @@ paths:
                   type: string
                   example: "203520"
               required:
+                - idAmbito
                 - codiceFiscale
                 - prestazioni
                 - dalGiorno
                 - alGiorno
-                - orarioInizio
-                - orarioFine
                 - idErogatore
         required: true
       responses:
@@ -204,6 +206,61 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/altreProposteAmbitoResponse'
+  /altraDisponibilita:
+    post:
+      summary: Altra disponibilita
+      operationId: createAltraDisponibilita
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                idAmbito:
+                  type: string
+                  example: "100923"
+                codiceFiscale:
+                  type: string
+                  example: "VLNFNS80A01H501U"
+                prestazioni:
+                  type: array
+                  items:
+                    type: string
+                    example: "89010.014, 89520.001"
+                dalGiorno:
+                  type: string
+                  example: "2023-01-25"
+                alGiorno:
+                  type: string
+                  example: "2023-01-31"
+                orarioInizio:
+                  type: string
+                  example: "19:00:00"
+                orarioFine:
+                  type: string
+                  example: "20:30:00"
+                idErogatore:
+                  type: string
+                  example: "102820"
+                idSede:
+                  type: string
+                  example: "203520"
+              required:
+                - idAmbito
+                - codiceFiscale
+                - prestazioni
+                - dalGiorno
+                - alGiorno
+                - idErogatore
+                - idSede
+        required: true
+      responses:
+        '200':
+          description: Altra disponibilita di una specifica sede
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/primaDisponibilitaResponse'
   /primaDisponibilita:
     post:
       summary: Prima disponibilita
