@@ -482,6 +482,9 @@ components:
         durata:
           type: integer
           example: 30
+        idAmbito:
+          type: string
+          example: "400923"
         combinazioni:
           type: array
           items:
