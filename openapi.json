@@ -427,7 +427,10 @@ components:
           example: "231820"
         ente:
           type: string
-          example: "ASL NAPOLI 2 NORD"
+          example: "ASL SALERNO"
+        ambito:
+          type: string
+          example: "ASL SALERNO SUD"
         proposte:
           type: array
           items:
