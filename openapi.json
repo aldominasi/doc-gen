@@ -197,7 +197,6 @@ paths:
                 - prestazioni
                 - dalGiorno
                 - alGiorno
-                - idErogatore
         required: true
       responses:
         '200':
