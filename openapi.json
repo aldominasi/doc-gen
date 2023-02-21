@@ -54,13 +54,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ambitiResponse'
-  /erogatoriAmbito/{idAmbito}{?prestazioni*}:
+  /erogatoriAmbito/{idAmbito}:
     get:
       summary: Lista degli erogatori per ambito
       operationId: getErogatoriAmbito
       parameters:
         - name: idAmbito
-          in: query
+          in: path
           description: id ambito
           required: true
           schema:
@@ -96,6 +96,18 @@ paths:
           schema:
             type: string
           example: "231820"
+        - name: erogazioneParziale
+          in: query
+          description: booleano che indica se le prestazioni possono essere prenotate parzialmente
+          required: false
+          schema:
+            type: boolean
+          example: true
+        - name: idAmbito
+          in: query
+          description: id dell'mabito
+          schema:
+            type: string
       requestBody:
         content:
           application/json:
@@ -305,6 +317,218 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/confermaPrenotazioneResponse'
+  /listaappuntamenti:
+    post:
+      summary: Recupera gli appuntamenti dell'assistito
+      operationId: listaAppuntamenti
+      parameters:
+        - name: struttura
+          in: header
+          description: codice della struttura. Per il cup regionale è 150000
+          required: true
+          schema:
+            type: string
+          example: "150000"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                codiceFiscale:
+                  type: string
+                  example: "VLNFNS80A01H501U"
+              required:
+                - codiceFiscale
+        required: true
+      responses:
+        '200':
+          description: lista appuntamenti futuri
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/listaAppuntamentiResponse'
+  /spostamento/disponibilita:
+    post:
+      summary: Recupera le proposte per effettuare lo spostamento di un appuntamento
+      operationId: proposteSpostamento
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                idErogatore:
+                  type: string
+                  example: "115921"
+                idSede:
+                  type: string
+                  example: "301222"
+                codiceFiscale:
+                  type: string
+                  example: "VLNFNS80A01H501U"
+                idPaziente:
+                  type: string
+                  example: "2020001046"
+                dalGiorno:
+                  type: string
+                  example: "2023-01-25"
+                alGiorno:
+                  type: string
+                  example: "2023-01-31"
+                nre:
+                  type: string
+                  example: "1500A4005247133"
+                classePriorita:
+                  type: string
+                  example: "P"
+                processId:
+                  type: string
+                  example: "7103823"
+                appuntamenti:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      codPrestazione:
+                        type: string
+                        example: "89700.015"
+                      idOrder:
+                        type: string
+                        example: "00"
+                      codAppuntamento:
+                        type: string
+                        example: "1303823"
+                    minItems: 1
+                    required:
+                      - codPrestazione
+                      - idOrder
+                      - codAppuntamento
+                orarioInizio:
+                  type: string
+                  example: "19:00:00"
+                orarioFine:
+                  type: string
+                  example: "20:30:00"
+              required:
+                - idErogatore
+                - idSede
+                - codiceFiscale
+                - idPaziente
+                - dalGiorno
+                - alGiorno
+                - nre
+                - classePriorita
+                - appuntamenti
+        required: true
+      responses:
+        '200':
+          description: Altre Proposte di un ambito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  stato:
+                    type: integer
+                    example: 200
+                  errore:
+                    type: string
+                    description: Il campo può essere null
+                    example: null
+                  data:
+                    type: object
+                    properties:
+                      processId:
+                        type: string
+                        example: "7103823"
+                      appuntamenti:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/appuntamentoSpostamento'
+  /spostamento/conferma:
+    post:
+      summary: Conferma lo spostamento
+      operationId: confermaSpostamento
+      parameters:
+        - name: struttura
+          in: header
+          description: codice della struttura. Per il cup regionale è 150000
+          required: true
+          schema:
+            type: string
+            example: "150000"
+        - name: codAppuntamento
+          in: query
+          description: codice dell'appuntamento da spostare
+          required: true
+          schema:
+            type: string
+            example: "3403923"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                codiceFiscale:
+                  type: string
+                  example: "VLNFNS80A01H501U"
+                idPaziente:
+                  type: string
+                  example: "2020001046"
+                classePriorita:
+                  type: string
+                  example: "P"
+                processId:
+                  type: string
+                  example: "7103823"
+                appuntamenti:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/appuntamentoSpostamento'
+                    required:
+                      - idAgenda
+                      - codiceAgenda
+                      - nomeAgenda
+                      - idPrestazione
+                      - desPrestazione
+                      - desAmbulatorio
+                      - idEnte
+                      - ente
+                      - idSede
+                      - desSede
+                      - indirizzoSede
+                      - idUnitaOperativa
+                      - dataAppuntamento
+                      - oraAppuntamento
+                      - idOrdine
+                      - timeband
+                      - combinazioni
+              required:
+                - codiceFiscale
+                - idPaziente
+                - classePriorita
+                - processId
+                - appuntamenti
+      responses:
+        '200':
+          description: Spostamento confermato
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  stato:
+                    type: integer
+                    example: 200
+                  errore:
+                    type: string
+                    description: Il campo può essere null
+                    example: null
+                  data:
+                    type: string
+                    example: "Spostamento confermato"
 components:
   securitySchemes:
     x-access-token:
@@ -447,6 +671,61 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/propostaAmbitoObject'
+    appuntamentoSpostamento:
+      type: object
+      properties:
+        idEnte:
+          type: string
+          example: "231820"
+        ente:
+          type: string
+          example: "ASL SALERNO"
+        idAgenda:
+          type: string
+          example: "717421"
+        codiceAgenda:
+          type: string
+          example: "717421"
+        nomeAgenda:
+          type: string
+          example: "PROVA TOTEM ASL NAPOLI 2 NORD 0"
+        idPrestazione:
+          type: string
+          example: "89010.014"
+        desPrestazione:
+          type: string
+          example: "VISITA DI CONTROLLO CARDIOLOGICA"
+        idSede:
+          type: string
+          example: "1831920"
+        desSede:
+          type: string
+          example: "DISTRETTO 41 - FRATTAMAGGIORE -"
+        indirizzoSede:
+          type: string
+          example: "VIA PADRE VERGARA MARIO"
+        idUnitaOperativa:
+          type: string
+          example: "NA20510689"
+        dataAppuntamento:
+          type: string
+          example: "16/01/2023"
+        oraAppuntamento:
+          type: string
+          example: "10:00"
+        idOrdine:
+          type: string
+          example: "00"
+        durata:
+          type: integer
+          example: 30
+        timeband:
+          type: string
+          example: "1503223"
+        combinazioni:
+          type: array
+          items:
+            $ref: '#/components/schemas/combinazioni'
     propostaAmbitoObject:
       type: object
       properties:
@@ -727,6 +1006,25 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/dataAltreProposteAmbito'
+    disponibilitaSpostamento:
+      type: object
+      properties:
+        stato:
+          type: integer
+          example: 200
+        errore:
+          type: string
+          description: Il campo può essere null
+        data:
+          type: object
+          properties:
+            processId:
+              type: string
+              example: "7103823"
+            appuntamenti:
+              type: array
+              items:
+                $ref: '#/components/schemas/propostaAmbitoObject'
     primaDisponibilitaBody:
       type: object
       properties:
@@ -838,6 +1136,120 @@ components:
               name:
                 type: string
                 example: "DISTRETTO 35 - BACOLI -"
-
+    listaAppuntamentiResponse:
+      type: object
+      properties:
+        stato:
+          type: integer
+          example: 200
+        errore:
+          type: string
+          description: Il campo può essere null
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              nre:
+                type: string
+                example: "1500A4005247131"
+              statoAppuntamento:
+                type: integer
+                example: 1
+              dataDiPrenotazione:
+                type: string
+                example: "07/02/2023"
+              dataEmissioneRicetta:
+                type: string
+                example: "31/01/2023"
+              classePriorita:
+                type: string
+                example: "P"
+              idTransazione:
+                type: string
+                example: "5803823"
+              stampaRicevuta:
+                type: boolean
+                example: true
+              abilitaAnnullamento:
+                type: boolean
+                example: false
+              messaggioAnnullamento:
+                type: string
+                example: "Non è possibile effettuare la cancellazione dell'appuntamento."
+              pagato:
+                type: boolean
+                example: false
+              idPaziente:
+                type: string
+                example: "2020001046"
+              diagnosi:
+                type: string
+                example: "002$|$0"
+              idEnte:
+                type: string
+                example: "115921"
+              ente:
+                type: string
+                example: "ASL SALERNO"
+              appuntamenti:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    codAppuntamento:
+                      type: string
+                      example: "2003823"
+                    desPrestazione:
+                      type: string
+                      example: "ELETTROCARDIOGRAMMA"
+                    idOrder:
+                      type: string
+                      example: "00"
+                    codPrestazione:
+                      type: string
+                      example: "89520.001"
+                    nota:
+                      type: string
+                      example: ""
+                    dataAppuntamento:
+                      type: string
+                      example: "13/02/2023 09:05"
+                    posizioneInCoda:
+                      type: string
+                      example: "1"
+                    stato:
+                      type: integer
+                      example: 1
+                    abilitaSpostamento:
+                      type: boolean
+                      example: true
+                    messaggioSpostamento:
+                      type: string
+                      example: ""
+                    idSede:
+                      type: string
+                      example: "301222"
+                    teleconsulto:
+                      type: boolean
+                      example: false
+                    ambulatorio:
+                      type: object
+                      properties:
+                        unitaOperativa:
+                          type: string
+                          example: "1703023"
+                        ubicazioneStruttura:
+                          type: string
+                          example: "PASTENA"
+                        codAmbulatorio:
+                          type: string
+                          example: "301222"
+                        descrizione:
+                          type: string
+                          example: "AMBITO SA CENTRO"
+                        nomeStruttura:
+                          type: string
+                          example: "POLIAMB. SPEC. TERRIT. - DSB 66 - PASTENA"
 security:
   - x-access-token: []
