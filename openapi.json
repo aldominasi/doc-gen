@@ -4,10 +4,10 @@ info:
   description: CISv2 API
   version: 1.0.0
 servers:
-  - url: https://apigw-collaudo.cdp-sanita-coll.soresa.it/ecupt/api/v2.0/appecupt/gpi2
+  - url: https://apigw-collaudo.cdp-sanita-coll.soresa.it/ecupt/api/v2.0/appecupt
     description: CISv2 API
 paths:
-  /ricetta:
+  /gpi2/ricetta:
     post:
       summary: Presa in carico della ricetta
       operationId: createRecipe
@@ -24,7 +24,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ricettaResponse'
-  /gruppoAmbiti:
+  /mapbox/reversegeocoding:
+    get:
+      summary: Recupero degli indirizzi e le relative coordinate
+      operationId: reverseGeocoding
+      parameters:
+        - name: indirizzo
+          in: query
+          description: indirizzo di ricerca
+          required: true
+          schema:
+            type: string
+          example: "via bartolo longo"
+      responses:
+        '200':
+          description: Lista degli indirizzi
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/reverseGeocodingResponse"
+  /gpi2/gruppoAmbiti:
     get:
       summary: Lista del gruppo ambiti
       operationId: getGruppoAmbiti
@@ -35,7 +54,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/gruppoAmbitiResponse'
-  /ambiti:
+  /gpi2/ambiti:
     get:
       summary: Lista degli ambiti
       operationId: getAmbiti
@@ -54,7 +73,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ambitiResponse'
-  /erogatoriAmbito/{idAmbito}:
+  /gpi2/erogatoriAmbito/{idAmbito}:
     get:
       summary: Lista degli erogatori per ambito
       operationId: getErogatoriAmbito
@@ -84,7 +103,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/erogatoriAmbitoResponse'
-  /sediErogatore:
+  /gpi2/sediErogatore:
     post:
       summary: Lista delle sedi erogatore
       operationId: getSediErogatore
@@ -121,7 +140,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/sediErogatoreResponse'
-  /annullaPrenotazioneSospesa:
+  /gpi2/annullaPrenotazioneSospesa:
     delete:
       summary: Annulla prenotazione sospesa
       operationId: deletePrenotazioneSospesa
@@ -132,7 +151,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/annullaPrenotazioneSospesaResponse'
-  /proposteAmbiti:
+  /gpi2/proposteAmbiti:
     post:
       summary: Proposte ambiti
       operationId: createProposteAmbiti
@@ -162,8 +181,8 @@ paths:
                   type: string
                   example: "41.9027835"
                 longitudine:
-                    type: string
-                    example: "12.4963655"
+                  type: string
+                  example: "12.4963655"
               required:
                 - codiceFiscale
                 - prestazioni
@@ -175,7 +194,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/proposteAmbitiResponse'
-  /altreProposte:
+  /gpi2/altreProposte:
     post:
       summary: Altre proposte
       operationId: createAltreProposte
@@ -228,7 +247,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/altreProposteAmbitoResponse'
-  /altraDisponibilita:
+  /gpi2/altraDisponibilita:
     post:
       summary: Altra disponibilita
       operationId: createAltraDisponibilita
@@ -283,7 +302,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/primaDisponibilitaResponse'
-  /primaDisponibilita:
+  /gpi2/primaDisponibilita:
     post:
       summary: Prima disponibilita
       operationId: createPrimaDisponibilita
@@ -300,7 +319,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/primaDisponibilitaResponse'
-  /confermaPrenotazione:
+  /gpi2/confermaPrenotazione:
     post:
       summary: Conferma prenotazione
       operationId: createConfermaPrenotazione
@@ -317,7 +336,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/confermaPrenotazioneResponse'
-  /listaappuntamenti:
+  /gpi2/listaappuntamenti:
     post:
       summary: Recupera gli appuntamenti dell'assistito
       operationId: listaAppuntamenti
@@ -348,7 +367,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/listaAppuntamentiResponse'
-  /spostamento/disponibilita:
+  /gpi2/spostamento/disponibilita:
     post:
       summary: Recupera le proposte per effettuare lo spostamento di un appuntamento
       operationId: proposteSpostamento
@@ -446,7 +465,7 @@ paths:
                         type: array
                         items:
                           $ref: '#/components/schemas/appuntamentoSpostamento'
-  /spostamento/conferma:
+  /gpi2/spostamento/conferma:
     post:
       summary: Conferma lo spostamento
       operationId: confermaSpostamento
@@ -921,6 +940,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/combinazioni'
+    reverseGeocodingResponse:
+      type: object
+      properties:
+        stato:
+          type: integer
+          example: 200
+        errore:
+          type: string
+          description: Il campo può essere null
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              indirizzo:
+                type: string
+                example: "Via Bartolo Longo, 84025 Eboli provincia di Salerno, Italia"
+              longitudine:
+                type: number
+                example: 15.049581
+              latitudine:
+                type: number
+                example: 40.613051
     gruppoAmbitiResponse:
       type: object
       properties:
