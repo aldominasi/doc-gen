@@ -4,10 +4,10 @@ info:
   description: CISv2 API
   version: 1.0.0
 servers:
-  - url: https://apigw-collaudo.cdp-sanita-coll.soresa.it/ecupt/api/v2.0/appecupt
+  - url: https://apigw-collaudo.cdp-sanita-coll.soresa.it/ecupt/api/v2.0/appecupt/gpi2
     description: CISv2 API
 paths:
-  /gpi2/ricetta:
+  /ricetta:
     post:
       summary: Presa in carico della ricetta
       operationId: createRecipe
@@ -24,26 +24,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ricettaResponse'
-  /mapbox/reversegeocoding:
-    get:
-      summary: Recupero degli indirizzi e le relative coordinate
-      operationId: reverseGeocoding
-      parameters:
-        - name: indirizzo
-          in: query
-          description: indirizzo di ricerca
-          required: true
-          schema:
-            type: string
-          example: "via bartolo longo"
-      responses:
-        '200':
-          description: Lista degli indirizzi
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/reverseGeocodingResponse"
-  /gpi2/gruppoAmbiti:
+  /gruppoAmbiti:
     get:
       summary: Lista del gruppo ambiti
       operationId: getGruppoAmbiti
@@ -54,7 +35,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/gruppoAmbitiResponse'
-  /gpi2/ambiti:
+  /ambiti:
     get:
       summary: Lista degli ambiti
       operationId: getAmbiti
@@ -73,7 +54,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ambitiResponse'
-  /gpi2/erogatoriAmbito/{idAmbito}:
+  /erogatoriAmbito/{idAmbito}:
     get:
       summary: Lista degli erogatori per ambito
       operationId: getErogatoriAmbito
@@ -103,7 +84,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/erogatoriAmbitoResponse'
-  /gpi2/sediErogatore:
+  /sediErogatore:
     post:
       summary: Lista delle sedi erogatore
       operationId: getSediErogatore
@@ -140,7 +121,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/sediErogatoreResponse'
-  /gpi2/annullaPrenotazioneSospesa:
+  /annullaPrenotazioneSospesa:
     delete:
       summary: Annulla prenotazione sospesa
       operationId: deletePrenotazioneSospesa
@@ -151,7 +132,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/annullaPrenotazioneSospesaResponse'
-  /gpi2/proposteAmbiti:
+  /proposteAmbiti:
     post:
       summary: Proposte ambiti
       operationId: createProposteAmbiti
@@ -181,8 +162,8 @@ paths:
                   type: string
                   example: "41.9027835"
                 longitudine:
-                  type: string
-                  example: "12.4963655"
+                    type: string
+                    example: "12.4963655"
               required:
                 - codiceFiscale
                 - prestazioni
@@ -194,7 +175,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/proposteAmbitiResponse'
-  /gpi2/altreProposte:
+  /altreProposte:
     post:
       summary: Altre proposte
       operationId: createAltreProposte
@@ -247,7 +228,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/altreProposteAmbitoResponse'
-  /gpi2/altraDisponibilita:
+  /altraDisponibilita:
     post:
       summary: Altra disponibilita
       operationId: createAltraDisponibilita
@@ -302,7 +283,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/primaDisponibilitaResponse'
-  /gpi2/primaDisponibilita:
+  /primaDisponibilita:
     post:
       summary: Prima disponibilita
       operationId: createPrimaDisponibilita
@@ -319,7 +300,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/primaDisponibilitaResponse'
-  /gpi2/confermaPrenotazione:
+  /confermaPrenotazione:
     post:
       summary: Conferma prenotazione
       operationId: createConfermaPrenotazione
@@ -336,7 +317,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/confermaPrenotazioneResponse'
-  /gpi2/listaappuntamenti:
+  /listaappuntamenti:
     post:
       summary: Recupera gli appuntamenti dell'assistito
       operationId: listaAppuntamenti
@@ -367,7 +348,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/listaAppuntamentiResponse'
-  /gpi2/spostamento/disponibilita:
+  /spostamento/disponibilita:
     post:
       summary: Recupera le proposte per effettuare lo spostamento di un appuntamento
       operationId: proposteSpostamento
@@ -465,7 +446,7 @@ paths:
                         type: array
                         items:
                           $ref: '#/components/schemas/appuntamentoSpostamento'
-  /gpi2/spostamento/conferma:
+  /spostamento/conferma:
     post:
       summary: Conferma lo spostamento
       operationId: confermaSpostamento
@@ -940,29 +921,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/combinazioni'
-    reverseGeocodingResponse:
-      type: object
-      properties:
-        stato:
-          type: integer
-          example: 200
-        errore:
-          type: string
-          description: Il campo può essere null
-        data:
-          type: array
-          items:
-            type: object
-            properties:
-              indirizzo:
-                type: string
-                example: "Via Bartolo Longo, 84025 Eboli provincia di Salerno, Italia"
-              longitudine:
-                type: number
-                example: 15.049581
-              latitudine:
-                type: number
-                example: 40.613051
     gruppoAmbitiResponse:
       type: object
       properties:
@@ -1032,9 +990,16 @@ components:
           type: string
           description: Il campo può essere null
         data:
-          type: array
-          items:
-            $ref: '#/components/schemas/dataProposteAmbiti'
+          type: object
+          properties:
+            asl:
+              type: array
+              items:
+                $ref: '#/components/schemas/dataProposteAmbiti'
+            ao:
+              type: array
+              items:
+                $ref: '#/components/schemas/dataProposteAmbiti'
     altreProposteAmbitoResponse:
       type: object
       properties:
