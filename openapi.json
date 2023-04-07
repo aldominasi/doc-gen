@@ -247,8 +247,17 @@ paths:
                 prestazioni:
                   type: array
                   items:
-                    type: string
-                    example: "89010.014, 89520.001"
+                    type: object
+                    properties:
+                      idOrdine:
+                        type: string
+                      idSede:
+                        type: string
+                    example:
+                      - idOrdine: "89010.014"
+                        idSede: "203520"
+                      - idOrdine: "89520.001"
+                        idSede: "203520"
                 dalGiorno:
                   type: string
                   example: "2023-01-25"
@@ -264,9 +273,6 @@ paths:
                 idErogatore:
                   type: string
                   example: "102820"
-                idSede:
-                  type: string
-                  example: "203520"
               required:
                 - idAmbito
                 - codiceFiscale
@@ -274,7 +280,6 @@ paths:
                 - dalGiorno
                 - alGiorno
                 - idErogatore
-                - idSede
         required: true
       responses:
         '200':
@@ -1047,8 +1052,17 @@ components:
         prestazioni:
           type: array
           items:
-            type: string
-            example: "89010.014, 89520.001"
+            type: object
+            properties:
+              idOrdine:
+                type: string
+              idSede:
+                type: string
+            example:
+              - idOrdine: "89010.014"
+                idSede: "301222"
+              - idOrdine: "89520.001"
+                idSede: "301222"
       required:
         - idAmbito
         - idEnte
