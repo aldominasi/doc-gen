@@ -1,1276 +1,1113 @@
 openapi: 3.0.3
 info:
-  title: CISv2
-  description: CISv2 API
+  title: Privati Akkredidati
+  description: Middleware per la comunicazione con il cup regionale
   version: 1.0.0
-servers:
-  - url: https://apigw-collaudo.cdp-sanita-coll.soresa.it/ecupt/api/v2.0/appecupt/gpi2
-    description: CISv2 API
-paths:
-  /ricetta:
-    post:
-      summary: Presa in carico della ricetta
-      operationId: createRecipe
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ricettaBody'
-        required: true
-      responses:
-        '200':
-          description: Ricetta presa in carico
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ricettaResponse'
-  /gruppoAmbiti:
-    get:
-      summary: Lista del gruppo ambiti
-      operationId: getGruppoAmbiti
-      responses:
-        '200':
-          description: Lista gruppo ambiti
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/gruppoAmbitiResponse'
-  /ambiti:
-    get:
-      summary: Lista degli ambiti
-      operationId: getAmbiti
-      parameters:
-        - name: id
-          in: query
-          description: id gruppo ambiti
-          required: true
-          schema:
-            type: string
-          example: "AGNA1"
-      responses:
-        '200':
-          description: Lista ambiti
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ambitiResponse'
-  /erogatoriAmbito/{idAmbito}:
-    get:
-      summary: Lista degli erogatori per ambito
-      operationId: getErogatoriAmbito
-      parameters:
-        - name: idAmbito
-          in: path
-          description: id ambito
-          required: true
-          schema:
-            type: string
-          example: "100923"
-        - name: prestazioni
-          in: query
-          description: codici catalogo delle prestazioni
-          required: false
-          schema:
-            type: array
-            items:
-              type: string
-          example: "89010.014, 89010.001"
-          style: form
-          explode: true
-      responses:
-        '200':
-          description: Lista erogatori ambito
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/erogatoriAmbitoResponse'
-  /sediErogatore:
-    post:
-      summary: Lista delle sedi erogatore
-      operationId: getSediErogatore
-      parameters:
-        - name: idEnte
-          in: query
-          description: id ente
-          required: true
-          schema:
-            type: string
-          example: "231820"
-        - name: erogazioneParziale
-          in: query
-          description: booleano che indica se le prestazioni possono essere prenotate parzialmente
-          required: false
-          schema:
-            type: boolean
-          example: true
-        - name: idAmbito
-          in: query
-          description: id dell'mabito
-          schema:
-            type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/sediErogatoriBody'
-        required: true
-      responses:
-        '200':
-          description: Lista sedi erogatore
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/sediErogatoreResponse'
-  /annullaPrenotazioneSospesa:
-    delete:
-      summary: Annulla prenotazione sospesa
-      operationId: deletePrenotazioneSospesa
-      responses:
-        '200':
-          description: Prenotazione sospesa annullata
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/annullaPrenotazioneSospesaResponse'
-  /proposteAmbiti:
-    post:
-      summary: Proposte ambiti
-      operationId: createProposteAmbiti
-      parameters:
-        - name: idGruppoAmbito
-          in: query
-          description: id ambito
-          required: true
-          schema:
-            type: string
-          example: "AGNA1"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                codiceFiscale:
-                  type: string
-                  example: "VLNFNS80A01H501U"
-                prestazioni:
-                  type: array
-                  items:
-                    type: string
-                    example: "89010.014, 89520.001"
-                latitudine:
-                  type: string
-                  example: "41.9027835"
-                longitudine:
-                    type: string
-                    example: "12.4963655"
-              required:
-                - codiceFiscale
-                - prestazioni
-        required: true
-      responses:
-        '200':
-          description: Proposte ambiti
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/proposteAmbitiResponse'
-  /altreProposte:
-    post:
-      summary: Altre proposte
-      operationId: createAltreProposte
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                idAmbito:
-                  type: string
-                  example: "100923"
-                codiceFiscale:
-                  type: string
-                  example: "VLNFNS80A01H501U"
-                prestazioni:
-                  type: array
-                  items:
-                    type: string
-                    example: "89010.014, 89520.001"
-                dalGiorno:
-                  type: string
-                  example: "2023-01-25"
-                alGiorno:
-                  type: string
-                  example: "2023-01-31"
-                orarioInizio:
-                  type: string
-                  example: "19:00:00"
-                orarioFine:
-                  type: string
-                  example: "20:30:00"
-                idErogatore:
-                  type: string
-                  example: "102820"
-                idSede:
-                  type: string
-                  example: "203520"
-              required:
-                - idAmbito
-                - codiceFiscale
-                - prestazioni
-                - dalGiorno
-                - alGiorno
-        required: true
-      responses:
-        '200':
-          description: Altre Proposte di un ambito
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/altreProposteAmbitoResponse'
-  /altraDisponibilita:
-    post:
-      summary: Altra disponibilita
-      operationId: createAltraDisponibilita
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                idAmbito:
-                  type: string
-                  example: "100923"
-                codiceFiscale:
-                  type: string
-                  example: "VLNFNS80A01H501U"
-                prestazioni:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      idOrdine:
-                        type: string
-                      idSede:
-                        type: string
-                    example:
-                      - idOrdine: "89010.014"
-                        idSede: "203520"
-                      - idOrdine: "89520.001"
-                        idSede: "203520"
-                dalGiorno:
-                  type: string
-                  example: "2023-01-25"
-                alGiorno:
-                  type: string
-                  example: "2023-01-31"
-                orarioInizio:
-                  type: string
-                  example: "19:00:00"
-                orarioFine:
-                  type: string
-                  example: "20:30:00"
-                idErogatore:
-                  type: string
-                  example: "102820"
-              required:
-                - idAmbito
-                - codiceFiscale
-                - prestazioni
-                - dalGiorno
-                - alGiorno
-                - idErogatore
-        required: true
-      responses:
-        '200':
-          description: Altra disponibilita di una specifica sede
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/primaDisponibilitaResponse'
-  /primaDisponibilita:
-    post:
-      summary: Prima disponibilita
-      operationId: createPrimaDisponibilita
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/primaDisponibilitaBody'
-        required: true
-      responses:
-        '200':
-          description: Prima disponibilita
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/primaDisponibilitaResponse'
-  /confermaPrenotazione:
-    post:
-      summary: Conferma prenotazione
-      operationId: createConfermaPrenotazione
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/confermaPrenotazioneBody'
-        required: true
-      responses:
-        '200':
-          description: Conferma prenotazione
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/confermaPrenotazioneResponse'
-  /listaappuntamenti:
-    post:
-      summary: Recupera gli appuntamenti dell'assistito
-      operationId: listaAppuntamenti
-      parameters:
-        - name: struttura
-          in: header
-          description: codice della struttura. Per il cup regionale è 150000
-          required: true
-          schema:
-            type: string
-          example: "150000"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                codiceFiscale:
-                  type: string
-                  example: "VLNFNS80A01H501U"
-              required:
-                - codiceFiscale
-        required: true
-      responses:
-        '200':
-          description: lista appuntamenti futuri
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/listaAppuntamentiResponse'
-  /spostamento/disponibilita:
-    post:
-      summary: Recupera le proposte per effettuare lo spostamento di un appuntamento
-      operationId: proposteSpostamento
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                idErogatore:
-                  type: string
-                  example: "115921"
-                idSede:
-                  type: string
-                  example: "301222"
-                codiceFiscale:
-                  type: string
-                  example: "VLNFNS80A01H501U"
-                idPaziente:
-                  type: string
-                  example: "2020001046"
-                dalGiorno:
-                  type: string
-                  example: "2023-01-25"
-                alGiorno:
-                  type: string
-                  example: "2023-01-31"
-                nre:
-                  type: string
-                  example: "1500A4005247133"
-                classePriorita:
-                  type: string
-                  example: "P"
-                processId:
-                  type: string
-                  example: "7103823"
-                appuntamenti:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      codPrestazione:
-                        type: string
-                        example: "89700.015"
-                      idOrder:
-                        type: string
-                        example: "00"
-                      codAppuntamento:
-                        type: string
-                        example: "1303823"
-                    minItems: 1
-                    required:
-                      - codPrestazione
-                      - idOrder
-                      - codAppuntamento
-                orarioInizio:
-                  type: string
-                  example: "19:00:00"
-                orarioFine:
-                  type: string
-                  example: "20:30:00"
-              required:
-                - idErogatore
-                - idSede
-                - codiceFiscale
-                - idPaziente
-                - dalGiorno
-                - alGiorno
-                - nre
-                - classePriorita
-                - appuntamenti
-        required: true
-      responses:
-        '200':
-          description: Altre Proposte di un ambito
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  stato:
-                    type: integer
-                    example: 200
-                  errore:
-                    type: string
-                    description: Il campo può essere null
-                    example: null
-                  data:
-                    type: object
-                    properties:
-                      processId:
-                        type: string
-                        example: "7103823"
-                      appuntamenti:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/appuntamentoSpostamento'
-  /spostamento/conferma:
-    post:
-      summary: Conferma lo spostamento
-      operationId: confermaSpostamento
-      parameters:
-        - name: struttura
-          in: header
-          description: codice della struttura. Per il cup regionale è 150000
-          required: true
-          schema:
-            type: string
-            example: "150000"
-        - name: codAppuntamento
-          in: query
-          description: codice dell'appuntamento da spostare
-          required: true
-          schema:
-            type: string
-            example: "3403923"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                codiceFiscale:
-                  type: string
-                  example: "VLNFNS80A01H501U"
-                idPaziente:
-                  type: string
-                  example: "2020001046"
-                classePriorita:
-                  type: string
-                  example: "P"
-                processId:
-                  type: string
-                  example: "7103823"
-                appuntamenti:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/appuntamentoSpostamento'
-                    required:
-                      - idAgenda
-                      - codiceAgenda
-                      - nomeAgenda
-                      - idPrestazione
-                      - desPrestazione
-                      - desAmbulatorio
-                      - idEnte
-                      - ente
-                      - idSede
-                      - desSede
-                      - indirizzoSede
-                      - idUnitaOperativa
-                      - dataAppuntamento
-                      - oraAppuntamento
-                      - idOrdine
-                      - timeband
-                      - combinazioni
-              required:
-                - codiceFiscale
-                - idPaziente
-                - classePriorita
-                - processId
-                - appuntamenti
-      responses:
-        '200':
-          description: Spostamento confermato
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  stato:
-                    type: integer
-                    example: 200
-                  errore:
-                    type: string
-                    description: Il campo può essere null
-                    example: null
-                  data:
-                    type: string
-                    example: "Spostamento confermato"
 components:
-  securitySchemes:
-    x-access-token:
-      type: apiKey
-      name: x-access-token
-      in: header
-      description: Tutte le richieste devono contenere il token di autenticazione
-  schemas:
-    assistito:
-      type: object
-      properties:
-        codiceFiscale:
-          type: string
-      required:
-        - codiceFiscale
-    codiceMedico:
-      type: object
-      properties:
-        id:
-          type: string
-          example: "DOC0003319220"
-        type:
-          type: string
-          example: "1"
-    medico:
-      type: object
-      properties:
-        firstName:
-          type: string
-          example: "Mario"
-        lastName:
-          type: string
-          example: "Rossi"
-    prestazioni:
-      type: object
-      properties:
-        desPrestazione:
-          type: string
-          example: "[89010.014] VISITA DI CONTROLLO CARDIOLOGICA"
-        idPrestazione:
-          type: string
-          example: "89010.014"
-        codCatalogo:
-          type: string
-          example: "89010.014"
-        idOrder:
-          type: string
-          example: "00"
-        prenotabile:
-          type: boolean
-          example: true
-    dataRicettaResponse:
-      type: object
-      properties:
-        nre:
-          type: string
-          example: "1500A1234567890"
-        dataEmissioneRicetta:
-          type: string
-          example: "2021-04-28T02:00:00Z"
-        dataScadenzaRicetta:
-          type: string
-          example: "2021-05-28T02:00:00Z"
-        classePriorita:
-          type: string
-          example: "P"
-        codiceMedico:
-          $ref: '#/components/schemas/codiceMedico'
-        codiceEsenzione:
-          type: string
-          example: "NE00"
-        prestazioni:
-          type: array
-          items:
-            $ref: '#/components/schemas/prestazioni'
-        asl:
-          type: string
-    dataGruppoAmbiti:
-      type: object
-      properties:
-        id:
-          type: string
-          example: "AREAGROUP_ID"
-        name:
-          type: string
-          example: "EDIT_NAME"
-        entryDateTime:
-          type: string
-          example: "2022-11-03T23:00:00Z"
-        entryUserId:
-          type: string
-          example: "1"
-    dataAmbiti:
-      type: object
-      properties:
-        id:
-          type: string
-          example: "105520"
-        name:
-          type: string
-          example: "ASL NAPOLI 1 - Y"
-        startDateTime:
-          type: string
-          example: "2022-11-03T23:00:00Z"
-        endDate:
-          type: string
-          example: "2022-11-03T23:00:00Z"
-        details:
-          type: array
-          items:
-            type: string
-            example: []
-        isPrivate:
-          type: string
-          example: "N"
-        code:
-          type: string
-          example: "105520"
-        type:
-          type: number
-          example: 0
-    dataProposteAmbiti:
-      type: object
-      properties:
-        idAmbito:
-          type: string
-          example: "100923"
-        ambito:
-          type: string
-          example: "ASL SALERNO SUD"
-        proposte:
-          type: array
-          items:
-            $ref: '#/components/schemas/proposteAmbiti'
-    dataAltreProposteAmbito:
-      type: array
-      items:
-        $ref: '#/components/schemas/propostaAmbitoObject'
-    proposteAmbiti:
-      type: array
-      items:
-        $ref: '#/components/schemas/propostaAmbitoObject'
-    appuntamentoSpostamento:
-      type: object
-      properties:
-        idEnte:
-          type: string
-          example: "231820"
-        ente:
-          type: string
-          example: "ASL SALERNO"
-        idAgenda:
-          type: string
-          example: "717421"
-        codiceAgenda:
-          type: string
-          example: "717421"
-        nomeAgenda:
-          type: string
-          example: "PROVA TOTEM ASL NAPOLI 2 NORD 0"
-        idPrestazione:
-          type: string
-          example: "89010.014"
-        desPrestazione:
-          type: string
-          example: "VISITA DI CONTROLLO CARDIOLOGICA"
-        idSede:
-          type: string
-          example: "1831920"
-        desSede:
-          type: string
-          example: "DISTRETTO 41 - FRATTAMAGGIORE -"
-        indirizzoSede:
-          type: string
-          example: "VIA PADRE VERGARA MARIO"
-        idUnitaOperativa:
-          type: string
-          example: "NA20510689"
-        dataAppuntamento:
-          type: string
-          example: "16/01/2023"
-        oraAppuntamento:
-          type: string
-          example: "10:00"
-        idOrdine:
-          type: string
-          example: "00"
-        durata:
-          type: integer
-          example: 30
-        timeband:
-          type: string
-          example: "1503223"
-        combinazioni:
-          type: array
-          items:
-            $ref: '#/components/schemas/combinazioni'
-    propostaAmbitoObject:
-      type: object
-      properties:
-        idEnte:
-          type: string
-          example: "231820"
-        ente:
-          type: string
-          example: "ASL SALERNO"
-        idAgenda:
-          type: string
-          example: "717421"
-        codiceAgenda:
-          type: string
-          example: "717421"
-        nomeAgenda:
-          type: string
-          example: "PROVA TOTEM ASL NAPOLI 2 NORD 0"
-        idPrestazione:
-          type: string
-          example: "89010.014"
-        desPrestazione:
-          type: string
-          example: "VISITA DI CONTROLLO CARDIOLOGICA"
-        idSede:
-          type: string
-          example: "1831920"
-        desSede:
-          type: string
-          example: "DISTRETTO 41 - FRATTAMAGGIORE -"
-        indirizzoSede:
-          type: string
-          example: "VIA PADRE VERGARA MARIO"
-        idUnitaOperativa:
-          type: string
-          example: "NA20510689"
-        dataAppuntamento:
-          type: string
-          example: "16/01/2023"
-        oraAppuntamento:
-          type: string
-          example: "10:00"
-        idOrdine:
-          type: string
-          example: "00"
-        durata:
-          type: integer
-          example: 30
-        idAmbito:
-          type: string
-          example: "400923"
-        combinazioni:
-          type: array
-          items:
-            $ref: '#/components/schemas/combinazioni'
-    confermaPrenotazioneBody:
-      type: object
-      properties:
-        codiceFiscale:
-          type: string
-          example: "VLNFNS80A01H501U"
-        idEnte:
-          type: string
-          example: "231820"
-        appuntamenti:
-          type: array
-          items:
-            $ref: '#/components/schemas/dataAppuntamentiConfermaPrenotazioneBody'
-      required:
-        - codiceFiscale
-        - idEnte
-        - appuntamenti
-    dataAppuntamentiConfermaPrenotazioneBody:
-      type: object
-      properties:
-        idAgenda:
-          type: string
-          example: "108121"
-        codiceAgenda:
-          type: string
-          example: "108121"
-        nomeAgenda:
-          type: string
-          example: "CARDIOLOGICA CRISPI - TEST ALMAVIVA"
-        idPrestazione:
-          type: string
-          example: "89520.001"
-        desPrestazione:
-          type: string
-          example: "ELETTROCARDIOGRAMMA"
-        desAmbulatorio:
-          type: string
-          example: "TELEMEDICINA TEST - VIA PORTAMEDINA, 80134 NAPOLI NA, ITALIA"
-        idSede:
-          type: string
-          example: "203520"
-        desSede:
-          type: string
-          example: "P.S.P. SANTA MARIA DI LORETO CRISPI"
-        indirizzoSede:
-          type: string
-          example: "VIA PORTAMEDINA, 80134 NAPOLI NA, ITALIA"
-        idUnitaOperativa:
-          type: string
-          example: "U2046893"
-        dataAppuntamento:
-          type: string
-          example: "16/01/2023"
-        oraAppuntamento:
-          type: string
-          example: "19:00"
-        idOrdine:
-          type: string
-          example: "11"
-        combinazioni:
-          type: array
-          items:
-            $ref: '#/components/schemas/combinazioni'
-      required:
-        - idAgenda
-        - codiceAgenda
-        - nomeAgenda
-        - idPrestazione
-        - desPrestazione
-        - desAmbulatorio
-        - idSede
-        - desSede
-        - indirizzoSede
-        - idUnitaOperativa
-        - dataAppuntamento
-        - oraAppuntamento
-        - idOrdine
-    combinazioni:
-      type: object
-      properties:
-        requestId:
-          type: array
-          items:
-            example: "00, 01"
-            description: Il campo può essere null
-    dataPrimaDisponibilita:
-      type: object
-      properties:
-        idAgenda:
-          type: string
-          example: "226322"
-        codiceAgenda:
-          type: string
-          example: "226322"
-        nomeAgenda:
-          type: string
-          example: "SOLO SSN - TEST TELEMEDICINA"
-        idPrestazione:
-          type: string
-          example: "89010.014"
-        desPrestazione:
-          type: string
-          example: "VISITA DI CONTROLLO CARDIOLOGICA"
-        desAmbulatorio:
-          type: string
-          example: "TELEMEDICINA TEST - VIA PORTAMEDINA, 80134 NAPOLI NA, ITALIA"
-        idSede:
-          type: string
-          example: "203520"
-        desSede:
-          type: string
-          example: "P.S.P. SANTA MARIA DI LORETO CRISPI"
-        idEnte:
-          type: string
-          example: "115921"
-        ente:
-          type: string
-          example: "ASL SALERNO"
-        indirizzoSede:
-          type: string
-          example: "VIA PORTAMEDINA, 80134 NAPOLI NA, ITALIA"
-        idUnitaOperativa:
-          type: string
-          example: "125822"
-        dataAppuntamento:
-          type: string
-          example: "16/01/2023"
-        oraAppuntamento:
-          type: string
-          example: "08:00"
-        idOrdine:
-          type: string
-          example: "00"
-        durata:
-          type: integer
-          example: 30
-        combinazioni:
-          type: array
-          items:
-            $ref: '#/components/schemas/combinazioni'
-    gruppoAmbitiResponse:
-      type: object
-      properties:
-        stato:
-          type: integer
-          example: 200
-        errore:
-          type: string
-          description: Il campo può essere null
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/dataGruppoAmbiti'
-    ricettaBody:
-      type: object
-      properties:
-        nre:
-          type: string
-        assistito:
-          $ref: '#/components/schemas/assistito'
-      required:
-        - nre
-        - assistito
-    ricettaResponse:
-      type: object
-      properties:
-        stato:
-          type: integer
-          example: 200
-        errore:
-          type: string
-          description: Il campo può essere null
-        data:
-          $ref: '#/components/schemas/dataRicettaResponse'
-    ambitiResponse:
-      type: object
-      properties:
-        stato:
-          type: integer
-          example: 200
-        errore:
-          type: string
-          description: Il campo può essere null
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/dataAmbiti'
-    annullaPrenotazioneSospesaResponse:
-      type: object
-      properties:
-        stato:
-          type: integer
-          example: 200
-        errore:
-          type: string
-          description: Il campo può essere null
-        data:
-          type: string
-          example: "La prenotazione in sospeso è stata annullata correttamente"
-    proposteAmbitiResponse:
-      type: object
-      properties:
-        stato:
-          type: integer
-          example: 200
-        errore:
-          type: string
-          description: Il campo può essere null
-        data:
-          type: object
-          properties:
-            asl:
-              type: array
-              items:
-                $ref: '#/components/schemas/dataProposteAmbiti'
-            ao:
-              type: array
-              items:
-                $ref: '#/components/schemas/dataProposteAmbiti'
-    altreProposteAmbitoResponse:
-      type: object
-      properties:
-        stato:
-          type: integer
-          example: 200
-        errore:
-          type: string
-          description: Il campo può essere null
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/dataAltreProposteAmbito'
-    disponibilitaSpostamento:
-      type: object
-      properties:
-        stato:
-          type: integer
-          example: 200
-        errore:
-          type: string
-          description: Il campo può essere null
-        data:
-          type: object
-          properties:
-            processId:
-              type: string
-              example: "7103823"
-            appuntamenti:
-              type: array
-              items:
-                $ref: '#/components/schemas/propostaAmbitoObject'
-    primaDisponibilitaBody:
-      type: object
-      properties:
-        idAmbito:
-          type: string
-          example: "400923"
-        idEnte:
-          type: string
-          example: "102820"
-        codiceFiscale:
-          type: string
-          example: "VLNFNS80A01H501U"
-        prestazioni:
-          type: array
-          items:
-            type: object
-            properties:
-              idOrdine:
-                type: string
-              idSede:
-                type: string
-            example:
-              - idOrdine: "89010.014"
-                idSede: "301222"
-              - idOrdine: "89520.001"
-                idSede: "301222"
-      required:
-        - idAmbito
-        - idEnte
-        - codiceFiscale
-        - prestazioni
-    sediErogatoriBody:
-      type: object
-      properties:
-        prestazioni:
-          type: array
-          items:
-            type: string
-            example: "89010.014, 89520.001"
-      required:
-        - prestazioni
-    primaDisponibilitaResponse:
-      type: object
-      properties:
-        stato:
-          type: integer
-          example: 200
-        errore:
-          type: string
-          description: Il campo può essere null
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/dataPrimaDisponibilita'
-    confermaPrenotazioneResponse:
-      type: object
-      properties:
-        stato:
-          type: integer
-          example: 200
-        errore:
-          type: string
-          description: Il campo può essere null
-        data:
-          type: object
-          properties:
-            messaggio:
-              type: string
-              example: "La prenotazione è stata confermata correttamente"
-            patientId:
-              type: string
-              example: "2020001046"
-            idTransazione:
-              type: string
-              example: "18901823"
-            note:
-              type: array
-              items:
-                type: string
-                example: "IL PAZIENTE E` PREGATO DI LASCIARE UN RECAPITO TELEFONICO ATTIVO PER TEMPESTIVE COMUNICAZIONI"
-    erogatoriAmbitoResponse:
-      type: object
-      properties:
-        stato:
-          type: integer
-          example: 200
-        errore:
-          type: string
-          description: Il campo può essere null
-        data:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: string
-                example: "231820"
-              name:
-                type: string
-                example: "ASL NAPOLI 2 NORD"
-    sediErogatoreResponse:
-      type: object
-      properties:
-        stato:
-          type: integer
-          example: 200
-        errore:
-          type: string
-          description: Il campo può essere null
-        data:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: string
-                example: "131920"
-              name:
-                type: string
-                example: "DISTRETTO 35 - BACOLI -"
-    listaAppuntamentiResponse:
-      type: object
-      properties:
-        stato:
-          type: integer
-          example: 200
-        errore:
-          type: string
-          description: Il campo può essere null
-        data:
-          type: array
-          items:
-            type: object
-            properties:
-              nre:
-                type: string
-                example: "1500A4005247131"
-              statoAppuntamento:
-                type: integer
-                example: 1
-              dataDiPrenotazione:
-                type: string
-                example: "07/02/2023"
-              dataEmissioneRicetta:
-                type: string
-                example: "31/01/2023"
-              classePriorita:
-                type: string
-                example: "P"
-              idTransazione:
-                type: string
-                example: "5803823"
-              stampaRicevuta:
-                type: boolean
-                example: true
-              abilitaAnnullamento:
-                type: boolean
-                example: false
-              messaggioAnnullamento:
-                type: string
-                example: "Non è possibile effettuare la cancellazione dell'appuntamento."
-              pagato:
-                type: boolean
-                example: false
-              idPaziente:
-                type: string
-                example: "2020001046"
-              diagnosi:
-                type: string
-                example: "002$|$0"
-              idEnte:
-                type: string
-                example: "115921"
-              ente:
-                type: string
-                example: "ASL SALERNO"
-              appuntamenti:
-                type: array
-                items:
+  schemas: {}
+paths:
+  "/api/cup/{diaryId}":
+    put:
+      summary: Aggiornamento dell'agenda
+      tags:
+        - Cup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                diaries:
                   type: object
                   properties:
-                    codAppuntamento:
-                      type: string
-                      example: "2003823"
-                    desPrestazione:
-                      type: string
-                      example: "ELETTROCARDIOGRAMMA"
-                    idOrder:
-                      type: string
-                      example: "00"
-                    codPrestazione:
-                      type: string
-                      example: "89520.001"
-                    nota:
-                      type: string
-                      example: ""
-                    dataAppuntamento:
-                      type: string
-                      example: "13/02/2023 09:05"
-                    posizioneInCoda:
-                      type: string
-                      example: "1"
-                    stato:
+                    accessModeId:
                       type: integer
-                      example: 1
-                    abilitaSpostamento:
+                      description: "Tipologia di accesso: -1-> non applicabile, 0-> a piedi, 1-> in
+                        macchina"
+                    accessTypeId:
+                      type: integer
+                      description: "Tipologia accesso agenda: 1-> Primo accesso, 0-> Accesso
+                        successivo, -1-> Entrambi"
+                    allCovers:
                       type: boolean
-                      example: true
-                    messaggioSpostamento:
+                      description: Indica se associare tutte le coperture economiche disponibili. Se
+                        false, considera il campo coverIds.
+                    authorityId:
                       type: string
-                      example: ""
-                    idSede:
+                      description: Id ente
+                    availabilityDelay:
+                      type: integer
+                      description: L'agenda mostra disponibilita' a partire da AVAILABILITY_DELAY
+                        (ORE) da adesso.
+                    code:
                       type: string
-                      example: "301222"
-                    teleconsulto:
+                      description: Codice agenda
+                    defaultFreeBookingDate:
                       type: boolean
-                      example: false
-                    ambulatorio:
+                      description: Imposta data default in forzatura libera
+                    defOrderDurationMins:
+                      type: integer
+                      description: Durata di default in minuti delle nuove prestazioni aggiunte
+                        all'agenda
+                    diarySupplyModes:
+                      type: array
+                      description: Lista di regimi per l'agenda con indicazione del listino
+                      items:
+                        type: object
+                        properties:
+                          costCenter:
+                            type: string
+                            description: Id del Centro di costo collegato al regime agenda.
+                          supplyModeId:
+                            type: string
+                            description: Id del regime
+                          endDate:
+                            type: string
+                            description: Data di fine validità del regime per l'agenda in formato Unix epoch
+                          startDate:
+                            type: string
+                            description: Data di inizio validità del regime per l'agenda in formato Unix
+                              epoch
+                          diaryId:
+                            type: string
+                            description: Id dell'agenda collegata al regime (corrisponde a quella corrente).
+                              Da lasciare vuoto in fase di creazione.
+                        required:
+                          - costCenter
+                          - supplyModeId
+                          - endDate
+                          - startDate
+                    executionUnitId:
+                      type: string
+                      description: Id unita' erogante
+                    hospitalId:
+                      type: string
+                      description: Id presidio
+                    operationUnitId:
+                      type: string
+                      description: Id unita' operativa
+                    siteId:
+                      type: string
+                      description: Id sede
+                    forResidents:
+                      type: boolean
+                      description: true se l'agenda e' riservabile per i residenti
+                    freeForceEnabled:
+                      type: boolean
+                      description: Indica se l'agenda è abilitata per effettuare la forzatura libera
+                    freeForceNotesNeeded:
+                      type: boolean
+                      description: Identifica se le note in forzatura libera sono obbligatorie
+                    name:
+                      type: string
+                      description: Nome agenda
+                    onlyAdjacentSlots:
+                      type: boolean
+                      description: Se true, la prenotazione avviene solo su slots consecutivi.
+                    orders:
+                      type: array
+                      description: Lista delle prestazioni associate all'agenda
+                      items:
+                        type: object
+                        properties:
+                          duration:
+                            type: integer
+                            description: Tempo necessario per l'esecuzione della prestazione
+                          id:
+                            type: string
+                            description: Id della prestazione
+                        required:
+                          - duration
+                          - id
+                    priorityClasses:
+                      type: array
+                      items:
+                        type: string
+                      description: Lista id priorita'
+                    privateFlag:
+                      type: boolean
+                      description: Indica se l'agenda non deve essere mostrata in disponibilita' a
+                        meno che l'operatore non sia abilitato puntualmente
+                    reminderAnonymization:
+                      type: boolean
+                      description: Indica se il promemoria per l'assistito sara' senza dati sensibili
+                        del paziente
+                    supplyModes:
+                      type: array
+                      items:
+                        type: integer
+                      description: Lista degli identificativi dei regimi di erogazione
+                    slotSize:
+                      type: integer
+                      description: Grandezza dello slot espressa in minuti
+                    typeId:
+                      type: integer
+                      description: "Tipo agenda: 1-> visita, 2-> tecnica, 3-> laboratorio"
+                    visibility:
+                      type: integer
+                      description: Giorni di visibilita' agenda
+                  required:
+                    - accessModeId
+                    - accessTypeId
+                    - allCovers
+                    - authorityId
+                    - defaultFreeBookingDate
+                    - defOrderDurationMins
+                    - diarySupplyModes
+                    - executionUnitId
+                    - hospitalId
+                    - operationUnitId
+                    - siteId
+                    - forResidents
+                    - freeForceEnabled
+                    - freeForceNotesNeeded
+                    - name
+                    - onlyAdjacentSlots
+                    - orders
+                    - priorityClasses
+                    - privateFlag
+                    - reminderAnonymization
+                    - supplyModes
+                    - slotSize
+                    - typeId
+                    - visibility
+              required:
+                - diaries
+        required: true
+      parameters:
+        - schema:
+            type: string
+            minLength: 1
+          in: path
+          name: diaryId
+          required: true
+          description: Id di sistema dell'agenda da modificare
+      responses:
+        "200":
+          description: Default Response
+  /api/cup/:
+    put:
+      summary: API per l'aggiornamento delle unità eroganti
+      tags:
+        - Cup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                executionUnit:
+                  type: object
+                  description: Oggetto dell'unità erogante
+                  properties:
+                    doctors:
+                      type: array
+                      description: Lista di dottori
+                      items:
+                        type: object
+                        properties:
+                          endDate:
+                            type: string
+                            description: Data di fine Unix epoch
+                          startDate:
+                            type: string
+                            description: Data di inizio di Unix epoch
+                          fiscalCode:
+                            type: string
+                            description: Codice fiscale del dottore appartenete all'unita' erogante
+                          isPrimary:
+                            type: boolean
+                            description: è primario?
+                          roleCode:
+                            type: string
+                            description: Ruolo dottore appartenente all'unita' erogante
+                        required:
+                          - endDate
+                          - startDate
+                          - fiscalCode
+                          - roleCode
+                    registry:
                       type: object
                       properties:
-                        unitaOperativa:
+                        automaticSupply:
+                          type: boolean
+                          description: Unità abilitata all'erogazione in fase di accettazione
+                        code:
                           type: string
-                          example: "1703023"
-                        ubicazioneStruttura:
+                          description: Codice unita' erogante
+                        description:
                           type: string
-                          example: "PASTENA"
-                        codAmbulatorio:
+                          description: Descrizione unita' erogante
+                        directAdmission:
+                          type: boolean
+                          description: Unità abilitata all'accettazione senza prenotazione
+                        endDate:
                           type: string
-                          example: "301222"
-                        descrizione:
+                          description: Data Fine validità Unita' Erogante
+                        id:
                           type: string
-                          example: "AMBITO SA CENTRO"
-                        nomeStruttura:
+                          description: Id unita' erogante
+                        name:
                           type: string
-                          example: "POLIAMB. SPEC. TERRIT. - DSB 66 - PASTENA"
-security:
-  - x-access-token: []
+                          description: Nome unita' erogante
+                        idOperationUnit:
+                          type: string
+                          description: Id Unita' Operativa
+                        notes:
+                          type: string
+                          description: Note per l'unita' erogante
+                        place:
+                          type: string
+                          description: Indirizzo Unita' Erogante
+                        specialization:
+                          type: string
+                          description: Branca unita' erogante
+                        startDate:
+                          type: string
+                          description: Data Inizio validità Unita' Erogante
+                        supplyModes:
+                          type: array
+                          description: Regimi di erogazione con relativo centro di costo
+                          items:
+                            type: object
+                            properties:
+                              costCenterId:
+                                type: string
+                                description: Id del centro di costo, associato al regime di erogazione
+                              supplyModeType:
+                                type: string
+                                description: Regime di erogazione
+                            required:
+                              - costCenterId
+                              - supplyModeType
+                        type:
+                          type: string
+                          enum:
+                            - AMBULATORIO
+                            - LABORATORIO
+                            - RADIOLOGIA
+                          description: Tipo unita' erogante
+                      required:
+                        - description
+                        - endDate
+                        - id
+                        - name
+                        - idOperationUnit
+                        - specialization
+                        - startDate
+                        - supplyModes
+                        - type
+                    services:
+                      type: array
+                      description: Prestazioni unita' erogante
+                      items:
+                        type: object
+                        properties:
+                          endDate:
+                            type: string
+                            description: Data di fine validità prestazione
+                          startDate:
+                            type: string
+                            description: Data di inizio validità prestazione
+                          cur:
+                            type: string
+                            description: Codice catalogo unico regionale della prestazione
+                          regionalNomenclatureCode:
+                            type: string
+                            description: Codice nomenclatore regionale della prestazione
+                        required:
+                          - endDate
+                          - startDate
+                          - cur
+                          - regionalNomenclatureCode
+                  required:
+                    - doctors
+                    - registry
+                    - services
+              required:
+                - executionUnit
+        required: true
+      responses:
+        "200":
+          description: Default Response
+  /api/cup/root:
+    post:
+      summary: Creazione/aggiornamento dell'unita' erogante effettuando anche la
+        creazione dell'agenda e la creazione/aggiornamento della struttura
+        dell'agenda
+      tags:
+        - Cup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                executionUnit:
+                  type: object
+                  description: Unita' erogante
+                  properties:
+                    doctors:
+                      type: array
+                      description: Lista dei dottori
+                      items:
+                        type: object
+                        properties:
+                          endDate:
+                            type: string
+                            description: Fine validita' del dottore in formato Unix epoch
+                          startDate:
+                            type: string
+                            description: Inizio validita' del dottore in formato Unix epoch
+                          fiscalCode:
+                            type: string
+                            description: Codice fiscale del dottore
+                        required:
+                          - endDate
+                          - startDate
+                          - fiscalCode
+                    registry:
+                      type: object
+                      properties:
+                        description:
+                          type: string
+                          description: Descrizione dell'unità erogante
+                        endDate:
+                          type: string
+                          description: Fine validita' dell'unita' erogante
+                        name:
+                          type: string
+                          description: Nome dell'unita' erogante
+                        idOperationUnit:
+                          type: string
+                          description: Id Unita' Operativa
+                        specialization:
+                          type: string
+                          description: Branca unita' erogante
+                        startDate:
+                          type: string
+                          description: Data Inizio validità Unita' Erogante in formato Unix epoch
+                        supplyModes:
+                          type: array
+                          description: Regimi di erogazione con relativo centro di costo
+                          items:
+                            type: object
+                            properties:
+                              costCenterId:
+                                type: string
+                                description: Id del centro di costo, associato al regime di erogazione
+                              supplyModeType:
+                                type: string
+                                description: Regime di erogazione
+                            required:
+                              - costCenterId
+                              - supplyModeType
+                        type:
+                          type: string
+                          description: Tipo unita' erogante
+                      required:
+                        - description
+                        - endDate
+                        - name
+                        - idOperationUnit
+                        - specialization
+                        - startDate
+                        - supplyModes
+                        - type
+                    services:
+                      type: array
+                      description: Prestazioni unita' erogante
+                      items:
+                        type: object
+                        properties:
+                          endDate:
+                            type: string
+                            description: Data di fine validita' prestazione in formato Unix epoch
+                          startDate:
+                            type: string
+                            description: Data di inizio validita' prestazione in formato Unix epoch
+                          cur:
+                            type: string
+                            description: Codice catalogo unico regionale della prestazione
+                          regionalNomenclatureCode:
+                            type: string
+                            description: Codice nomenclatore regionale della prestazione
+                        required:
+                          - endDate
+                          - startDate
+                          - cur
+                          - regionalNomenclatureCode
+                  required:
+                    - doctors
+                    - registry
+                    - services
+                diaries:
+                  type: object
+                  properties:
+                    accessModeId:
+                      type: integer
+                      description: "Tipologia di accesso: -1-> non applicabile, 0-> a piedi, 1-> in
+                        macchina"
+                    accessTypeId:
+                      type: integer
+                      description: "Tipologia accesso agenda: 1-> Primo accesso, 0-> Accesso
+                        successivo, -1-> Entrambi"
+                    allCovers:
+                      type: boolean
+                      description: Indica se associare tutte le coperture economiche disponibili. Se
+                        false, considera il campo coverIds.
+                    defaultFreeBookingDate:
+                      type: boolean
+                      description: Imposta data default in forzatura libera
+                    defOrderDurationMins:
+                      type: integer
+                      description: Durata di default in minuti delle nuove prestazioni aggiunte
+                        all'agenda
+                    diarySupplyModes:
+                      type: array
+                      description: Lista di regimi per l'agenda con indicazione del listino
+                      items:
+                        type: object
+                        properties:
+                          costCenter:
+                            type: string
+                            description: Id del Centro di costo collegato al regime agenda.
+                          supplyModeId:
+                            type: string
+                            description: Id del regime
+                          endDate:
+                            type: string
+                            description: Data di fine validità del regime per l'agenda in formato Unix epoch
+                          startDate:
+                            type: string
+                            description: Data di inizio validità del regime per l'agenda in formato Unix
+                              epoch
+                          diaryId:
+                            type: string
+                            description: Id dell'agenda collegata al regime (corrisponde a quella corrente).
+                              Da lasciare vuoto in fase di creazione.
+                        required:
+                          - costCenter
+                          - supplyModeId
+                          - endDate
+                          - startDate
+                    forResidents:
+                      type: boolean
+                      description: true se l'agenda e' riservabile per i residenti
+                    freeForceEnabled:
+                      type: boolean
+                      description: Indica se l'agenda è abilitata per effettuare la forzatura libera
+                    freeForceNotesNeeded:
+                      type: boolean
+                      description: Identifica se le note in forzatura libera sono obbligatorie
+                    name:
+                      type: string
+                      description: Nome agenda
+                    onlyAdjacentSlots:
+                      type: boolean
+                      description: Se true, la prenotazione avviene solo su slots consecutivi.
+                    orders:
+                      type: array
+                      description: Lista delle prestazioni associate all'agenda
+                      items:
+                        type: object
+                        properties:
+                          duration:
+                            type: integer
+                            description: Tempo necessario per l'esecuzione della prestazione
+                          id:
+                            type: string
+                            description: Id della prestazione
+                        required:
+                          - duration
+                          - id
+                    priorityClasses:
+                      type: array
+                      items:
+                        type: string
+                      description: Lista identificativi delle priorita' con la quale e' possibile
+                        erogare questa prestazione
+                    privateFlag:
+                      type: boolean
+                      description: Indica se l'agenda non deve essere mostrata in disponibilita' a
+                        meno che l'operatore non sia abilitato puntualmente
+                    reminderAnonymization:
+                      type: boolean
+                      description: Indica se il promemoria per l'assistito sara' senza dati sensibili
+                        del paziente
+                    supplyModes:
+                      type: array
+                      items:
+                        type: string
+                      description: Lista degli identificativi dei regimi di erogazione
+                    typeId:
+                      type: integer
+                      description: "Tipo agenda: 1-> visita, 2-> tecnica, 3-> laboratorio"
+                    visibility:
+                      type: integer
+                      description: Giorni di visibilita' agenda
+                  required:
+                    - accessModeId
+                    - accessTypeId
+                    - allCovers
+                    - defaultFreeBookingDate
+                    - defOrderDurationMins
+                    - diarySupplyModes
+                    - forResidents
+                    - freeForceEnabled
+                    - freeForceNotesNeeded
+                    - name
+                    - onlyAdjacentSlots
+                    - orders
+                    - priorityClasses
+                    - privateFlag
+                    - reminderAnonymization
+                    - supplyModes
+                    - typeId
+                    - visibility
+                schemas:
+                  type: object
+                  description: Struttura dell'agenda
+                  properties:
+                    endDate:
+                      type: string
+                      description: Data di fine validita' della struttura in formato Unix epoch
+                    extra:
+                      type: boolean
+                      description: Se true, si tratta di una struttura con extra slot disponibili.
+                    slotStartTime:
+                      type: string
+                      description: Ora di inizio degli slot di disponibilita' in formato Unix epoch
+                    startDate:
+                      type: string
+                      description: Data di inizio validita' della struttura in formato Unix epoch
+                    schemaSlotSize:
+                      type: integer
+                      description: Dimensioni dello slot in minuti.
+                    timebands:
+                      type: array
+                      description: Fasce associate a questa struttura.
+                      items:
+                        type: object
+                        properties:
+                          endTime:
+                            type: string
+                            description: Ora di fine della fascia in formato Unix epoch
+                          maxQuantity:
+                            type: integer
+                            description: Numero massimo di slots prenotabili nella fascia.
+                          orders:
+                            type: array
+                            description: Lista delle prestazioni prenotabili nella fascia.
+                            items:
+                              type: object
+                              properties:
+                                duration:
+                                  type: integer
+                                  description: Tempo necessario per l'esecuzione della prestazione
+                                id:
+                                  type: string
+                                  description: Id della prestazione
+                                priorityClasses:
+                                  type: array
+                                  items:
+                                    type: string
+                                  description: Lista identificativi delle priorita' con la quale e' possibile
+                                    erogare questa prestazione
+                                supplyModes:
+                                  type: array
+                                  items:
+                                    type: string
+                                  description: Lista identificativi dei regimi di erogazione con la quale e'
+                                    possibile erogare questa prestazione
+                              required:
+                                - duration
+                                - id
+                                - priorityClasses
+                                - supplyModes
+                          priorityClasses:
+                            type: array
+                            items:
+                              type: string
+                            description: Lista id priorita'
+                          startTime:
+                            type: string
+                            description: Ora di inizio della fascia in formato Unix epoch
+                          supplyModes:
+                            type: array
+                            description: Lista dei regimi di erogazione permessi per la fascia
+                            items:
+                              type: object
+                              properties:
+                                lastUpdate:
+                                  type: string
+                                  description: Data/ora ultimo aggiornamento in formato Unix epoch
+                                supplyModeId:
+                                  type: string
+                                  description: Id del regime di erogazione
+                              required:
+                                - lastUpdate
+                                - supplyModeId
+                          weekday:
+                            type: number
+                        required:
+                          - endTime
+                          - maxQuantity
+                          - orders
+                          - priorityClasses
+                          - startTime
+                          - supplyModes
+                          - weekday
+                  required:
+                    - endDate
+                    - extra
+                    - slotStartTime
+                    - startDate
+                    - schemaSlotSize
+                    - timebands
+                interni:
+                  type: object
+                  description: Oggetto contenente i campi interni da restituire alla struttura
+                    sanitaria
+              required:
+                - executionUnit
+                - diaries
+                - schemas
+        required: true
+      responses:
+        "200":
+          description: Default Response
+  "/api/cup/schemas/{schemaId}":
+    put:
+      summary: Effettua l'aggiornamento della struttura effettuando la disabilitazione
+        e successivamente all'aggiornamento dell'agenda questa viene riabilitata
+      tags:
+        - Cup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                schemas:
+                  type: object
+                  description: Struttura dell'agenda
+                  properties:
+                    diaryId:
+                      type: string
+                      description: Identificativo agenda a cui e' legata questa struttura.
+                    executionUnitId:
+                      type: string
+                      description: Identificativo unita' erogante a cui e' legata l'agenda di questa
+                        struttura.
+                    endDate:
+                      type: string
+                      description: Data di fine validita' della struttura in formato Unix epoch
+                    extra:
+                      type: boolean
+                      description: Se true, si tratta di una struttura con extra slot disponibili.
+                    slotStartTime:
+                      type: string
+                      description: Ora di inizio degli slot di disponibilita' in formato Unix epoch
+                    startDate:
+                      type: string
+                      description: Data di inizio validita' della struttura in formato Unix epoch
+                    schemaSlotSize:
+                      type: integer
+                      description: Dimensioni dello slot in minuti.
+                    timebands:
+                      type: array
+                      description: Fasce associate a questa struttura.
+                      items:
+                        type: object
+                        properties:
+                          endTime:
+                            type: string
+                            description: Ora di fine della fascia in formato Unix epoch
+                          maxQuantity:
+                            type: integer
+                            description: Numero massimo di slots prenotabili nella fascia.
+                          orders:
+                            type: array
+                            description: Lista delle prestazioni prenotabili nella fascia.
+                            items:
+                              type: object
+                              properties:
+                                duration:
+                                  type: integer
+                                  description: Tempo necessario per l'esecuzione della prestazione
+                                id:
+                                  type: string
+                                  description: Id della prestazione
+                                priorityClasses:
+                                  type: array
+                                  items:
+                                    type: string
+                                  description: Lista identificativi delle priorita' con la quale e' possibile
+                                    erogare questa prestazione
+                                supplyModes:
+                                  type: array
+                                  items:
+                                    type: string
+                                  description: Lista identificativi dei regimi di erogazione con la quale e'
+                                    possibile erogare questa prestazione
+                              required:
+                                - duration
+                                - id
+                                - priorityClasses
+                                - supplyModes
+                          priorityClasses:
+                            type: array
+                            items:
+                              type: string
+                            description: Lista id priorita'
+                          startTime:
+                            type: string
+                            description: Ora di inizio della fascia in formato Unix epoch
+                          supplyModes:
+                            type: array
+                            description: Lista dei regimi di erogazione permessi per la fascia
+                            items:
+                              type: object
+                              properties:
+                                lastUpdate:
+                                  type: string
+                                  description: Data/ora ultimo aggiornamento
+                                supplyModeId:
+                                  type: string
+                                  description: Id del regime di erogazione
+                              required:
+                                - lastUpdate
+                                - supplyModeId
+                          weekday:
+                            type: integer
+                            description: Giorno della settimana. (1=LUN, 7=DOM)
+                        required:
+                          - endTime
+                          - maxQuantity
+                          - orders
+                          - priorityClasses
+                          - startTime
+                          - supplyModes
+                          - weekday
+                  required:
+                    - diaryId
+                    - executionUnitId
+                    - endDate
+                    - extra
+                    - slotStartTime
+                    - startDate
+                    - schemaSlotSize
+                    - timebands
+              required:
+                - schemas
+        required: true
+      parameters:
+        - schema:
+            type: string
+            minLength: 1
+          in: path
+          name: schemaId
+          required: true
+          description: Identificativo della struttura dell'agenda
+      responses:
+        "200":
+          description: Default Response
+  /api/cup/structure:
+    get:
+      summary: Restituisce la struttura gerarchica dell'azienda
+      tags:
+        - Cup
+      responses:
+        "200":
+          description: Default Response
+  /api/cup/suspension:
+    post:
+      summary: Inserimento di una sospensione
+      tags:
+        - Cup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                allDiaries:
+                  type: boolean
+                  description: Indica se applicare la sospensione a tutte le agende dell'unita'
+                    erogante.
+                diariesId:
+                  type: array
+                  description: Lista identificativi agende su cui applicare la sospensione.
+                    Obbligatorio se allDiaries e' false.
+                  items:
+                    type: string
+                disableReasonId:
+                  type: string
+                  description: Identificativo motivazione disattivazione della sospensione.
+                reasonId:
+                  type: string
+                  description: Identificativo motivazione della sospensione.
+                siteId:
+                  type: string
+                  description: Id sede
+                unitId:
+                  type: string
+                  description: Id unita' erogante
+                toDate:
+                  type: string
+                  description: Data di fine della sospensione in formato Unix epoch
+                fromDate:
+                  type: string
+                  description: Data di inizio della sospensione in formato Unix epoch
+                operationUnitId:
+                  type: string
+                  description: Id unita' operativa
+                weekdayMask:
+                  type: integer
+                  enum:
+                    - 1
+                    - 2
+                    - 4
+                    - 8
+                    - 16
+                    - 32
+                    - 64
+                  description: "Bitmask dei giorni della settimana: Lunedì = 1, Martedì = 2,
+                    Mercoledì = 4, Giovedì = 8, Venerdì = 16, Sabato = 32,
+                    Domenica = 64"
+              required:
+                - allDiaries
+                - diariesId
+                - disableReasonId
+                - reasonId
+                - siteId
+                - unitId
+                - toDate
+                - fromDate
+                - operationUnitId
+                - weekdayMask
+        required: true
+      responses:
+        "200":
+          description: Default Response
+  /api/v4/process-apis/booking-management/bookings/notification:
+    post:
+      tags:
+        - Incoming V4
+      responses:
+        "200":
+          description: Default Response
+  /api/v4/process-apis/booking-management/pre-bookings/notification:
+    post:
+      tags:
+        - Incoming V4
+      responses:
+        "200":
+          description: Default Response
+  "/api/v4/process-apis/booking-management/bookings/{bookingCode}":
+    delete:
+      tags:
+        - Incoming V4
+      parameters:
+        - schema:
+            type: string
+            minLength: 1
+          in: path
+          name: bookingCode
+          required: true
+      responses:
+        "200":
+          description: Default Response
+  /api/v4/process-apis/booking-management/bookings:
+    post:
+      tags:
+        - Incoming V4
+      responses:
+        "200":
+          description: Default Response
+  /api/v4/admission:
+    post:
+      summary: Notifica di accettazione
+      tags:
+        - Outgoing V4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                admissionTypeId:
+                  type: string
+                  description: Id tipologia di accettazione
+                details:
+                  type: array
+                  description: Elenco dettagli prestazioni
+                  items:
+                    type: object
+                    properties:
+                      bookingCode:
+                        type: string
+                        description: Eventuale codice della prenotazione
+                      ExecutionDateTime:
+                        type: string
+                        description: Data/ora erogazione della prestazione in formato Unix epoch
+                      scheduledDatetime:
+                        type: string
+                        description: Data/ora di presunta erogazione in formato Unix epoch
+                      bookingDate:
+                        type: string
+                      phoneNumber:
+                        type: string
+                        description: Numero di telefono paziente per eventuali comunicazioni,
+                          obbligatorio se assente reasonDenyPhoneNumber
+                      quantity:
+                        type: number
+                        description: Quantita'
+                      reasonDenyPhoneNumber:
+                        type: string
+                        description: Motivazione indisponibilità numero di telefono
+                      serviceCode:
+                        type: string
+                        description: Codice prestazione
+                      specializationCode:
+                        type: string
+                        description: Branca della prestazione
+                    required:
+                      - ExecutionDateTime
+                      - scheduledDatetime
+                      - serviceCode
+                directEntry:
+                  type: boolean
+                  description: Flag per indicare se accesso diretto
+                executionUnitId:
+                  type: string
+                  description: Identificativo di sistema dell'unità erogante
+                personIdentifier:
+                  type: string
+                  description: "Codice Identificativo della persona: CF, ENI o STP"
+                prescription:
+                  type: object
+                  description: Informazioni relative alla ricetta
+                  properties:
+                    compilationDatetime:
+                      type: number
+                      description: Data compilazione ricetta in formato Unix epoch
+                    diagnosisCode:
+                      type: string
+                      description: Codice dell'eventuale diagnosi
+                    doctorIdentifier:
+                      type: string
+                      description: Codice fiscale medico che ha emesso la ricetta
+                    doctorType:
+                      type: string
+                      description: Tipologia del medico
+                    exemptionCode:
+                      type: string
+                      description: Identificativo ministeriale dell'eventuale esenzione
+                    nreAccessType:
+                      type: string
+                      enum:
+                        - ACCESSO_SUCCESSIVO
+                        - PRIMO_ACCESSO
+                      description: Tipo di accesso
+                    prescriptionNumber:
+                      type: string
+                      description: Numero ricetta
+                    priorityClass:
+                      type: string
+                      enum:
+                        - B
+                        - D
+                        - P
+                        - U
+                      description: Classe di priorita' della ricetta
+                  required:
+                    - compilationDatetime
+                    - doctorType
+                    - priorityClass
+                prescriptionNRE:
+                  type: string
+                  description: Numero di ricetta elettronica, obbligatorio se assente l'oggetto
+                    prescription
+                site:
+                  type: object
+                  description: Informazioni della sede
+                  properties:
+                    identifiedBy:
+                      type: string
+                      description: Campo per indicare tipologia di indentificazione della sede
+                    identifier:
+                      type: string
+                      description: Codice identificativo della sede
+                  required:
+                    - identifiedBy
+                    - identifier
+                supplyModeCategoryId:
+                  type: string
+                  description: Id categoria regime di erogazione.
+              required:
+                - admissionTypeId
+                - details
+                - personIdentifier
+                - site
+                - supplyModeCategoryId
+        required: true
+      responses:
+        "200":
+          description: Default Response
+    patch:
+      summary: Modifica lo stato dell'accettazione
+      tags:
+        - Outgoing V4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                admissionIdentification:
+                  type: object
+                  description: Rappresenta il tipo di codice identificativo e lo stesso codice
+                    utilizzati per identificare un'accettazione.
+                  properties:
+                    identifiedBy:
+                      type: string
+                      enum:
+                        - CODICE_ACCETTAZIONE
+                        - NUMERO_RICETTA
+                      description: Tipo di codice con cui identificare l'accettazione.
+                    identifier:
+                      type: string
+                      description: Identificativo dell'accettazione. Varia in base al tipo di
+                        identificativo scelto nel campo identifiedBy
+                  required:
+                    - identifiedBy
+                    - identifier
+                admissionStatus:
+                  type: string
+                  enum:
+                    - DA_EROGARE
+                    - ELIMINATA
+                    - EROGATA
+                    - NON_EROGATA
+                    - PRESCRITTA
+                  description: Nuovo stato da assegnare all'accettazione.
+                reasonId:
+                  type: integer
+                  description: Identificativo motivazione del cambio di stato. Necessaria solo nel
+                    caso di stato NON_EROGATA.
+              required:
+                - admissionStatus
+        required: true
+      responses:
+        "200":
+          description: Default Response
+tags:
+  - name: Cup
+    description: API di configurazione delle strutture sul CUP regionale
+  - name: Incoming V4
+    description: API di notifiche dal CUP regionale
+  - name: Outgoing V4
+    description: API di notifiche verso il CUP regionale
