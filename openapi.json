@@ -1,7 +1,9 @@
 openapi: 3.0.3
 info:
   title: Privati Akkredidati
-  description: Middleware per la comunicazione con il cup regionale
+  description: Middleware per la comunicazione con il cup regionale. Per
+    effettuare le request inserire la versione (es. 1.0.0) nel campo header
+    Accept-Version
   version: 1.0.0
 components:
   schemas: {}
