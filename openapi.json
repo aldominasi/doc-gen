@@ -546,6 +546,14 @@ paths:
                     typeId:
                       type: integer
                       description: "Tipo agenda: 1-> visita, 2-> tecnica, 3-> laboratorio"
+                    online:
+                      type: boolean
+                      description: Se true, prestazione prenotabile autonomamente da cittadino (se
+                        prevista prenotazione tramite APP Online)
+                    extraCup:
+                      type: boolean
+                      description: Flag che indica se la prestazione e' prenotabile su sistemi
+                        integrati
                     visibility:
                       type: integer
                       description: Giorni di visibilita' agenda
@@ -572,9 +580,15 @@ paths:
                   type: object
                   description: Struttura dell'agenda
                   properties:
+                    id:
+                      type: string
+                      description: Id dell'agenda, required per le chiamate di aggiornamento
                     endDate:
                       type: string
                       description: Data di fine validita' della struttura in formato Unix epoch
+                    status:
+                      type: boolean
+                      description: Se true, la struttura e' abilitata.
                     extra:
                       type: boolean
                       description: Se true, si tratta di una struttura con extra slot disponibili.
@@ -692,118 +706,112 @@ paths:
             schema:
               type: object
               properties:
-                schemas:
-                  type: object
-                  description: Struttura dell'agenda
-                  properties:
-                    diaryId:
-                      type: string
-                      description: Identificativo agenda a cui e' legata questa struttura.
-                    executionUnitId:
-                      type: string
-                      description: Identificativo unita' erogante a cui e' legata l'agenda di questa
-                        struttura.
-                    endDate:
-                      type: string
-                      description: Data di fine validita' della struttura in formato Unix epoch
-                    extra:
-                      type: boolean
-                      description: Se true, si tratta di una struttura con extra slot disponibili.
-                    slotStartTime:
-                      type: string
-                      description: Ora di inizio degli slot di disponibilita' in formato Unix epoch
-                    startDate:
-                      type: string
-                      description: Data di inizio validita' della struttura in formato Unix epoch
-                    schemaSlotSize:
-                      type: integer
-                      description: Dimensioni dello slot in minuti.
-                    timebands:
-                      type: array
-                      description: Fasce associate a questa struttura.
-                      items:
-                        type: object
-                        properties:
-                          endTime:
-                            type: string
-                            description: Ora di fine della fascia in formato Unix epoch
-                          maxQuantity:
-                            type: integer
-                            description: Numero massimo di slots prenotabili nella fascia.
-                          orders:
-                            type: array
-                            description: Lista delle prestazioni prenotabili nella fascia.
-                            items:
-                              type: object
-                              properties:
-                                duration:
-                                  type: integer
-                                  description: Tempo necessario per l'esecuzione della prestazione
-                                id:
-                                  type: string
-                                  description: Id della prestazione
-                                priorityClasses:
-                                  type: array
-                                  items:
-                                    type: string
-                                  description: Lista identificativi delle priorita' con la quale e' possibile
-                                    erogare questa prestazione
-                                supplyModes:
-                                  type: array
-                                  items:
-                                    type: string
-                                  description: Lista identificativi dei regimi di erogazione con la quale e'
-                                    possibile erogare questa prestazione
-                              required:
-                                - duration
-                                - id
-                                - priorityClasses
-                                - supplyModes
-                          priorityClasses:
-                            type: array
-                            items:
+                diaryId:
+                  type: string
+                  description: Identificativo agenda a cui e' legata questa struttura.
+                executionUnitId:
+                  type: string
+                  description: Identificativo unita' erogante a cui e' legata l'agenda di questa
+                    struttura.
+                endDate:
+                  type: string
+                  description: Data di fine validita' della struttura in formato Unix epoch
+                extra:
+                  type: boolean
+                  description: Se true, si tratta di una struttura con extra slot disponibili.
+                slotStartTime:
+                  type: string
+                  description: Ora di inizio degli slot di disponibilita' in formato Unix epoch
+                startDate:
+                  type: string
+                  description: Data di inizio validita' della struttura in formato Unix epoch
+                schemaSlotSize:
+                  type: integer
+                  description: Dimensioni dello slot in minuti.
+                timebands:
+                  type: array
+                  description: Fasce associate a questa struttura.
+                  items:
+                    type: object
+                    properties:
+                      endTime:
+                        type: string
+                        description: Ora di fine della fascia in formato Unix epoch
+                      maxQuantity:
+                        type: integer
+                        description: Numero massimo di slots prenotabili nella fascia.
+                      orders:
+                        type: array
+                        description: Lista delle prestazioni prenotabili nella fascia.
+                        items:
+                          type: object
+                          properties:
+                            duration:
+                              type: integer
+                              description: Tempo necessario per l'esecuzione della prestazione
+                            id:
                               type: string
-                            description: Lista id priorita'
-                          startTime:
-                            type: string
-                            description: Ora di inizio della fascia in formato Unix epoch
-                          supplyModes:
-                            type: array
-                            description: Lista dei regimi di erogazione permessi per la fascia
-                            items:
-                              type: object
-                              properties:
-                                lastUpdate:
-                                  type: string
-                                  description: Data/ora ultimo aggiornamento
-                                supplyModeId:
-                                  type: string
-                                  description: Id del regime di erogazione
-                              required:
-                                - lastUpdate
-                                - supplyModeId
-                          weekday:
-                            type: integer
-                            description: Giorno della settimana. (1=LUN, 7=DOM)
-                        required:
-                          - endTime
-                          - maxQuantity
-                          - orders
-                          - priorityClasses
-                          - startTime
-                          - supplyModes
-                          - weekday
-                  required:
-                    - diaryId
-                    - executionUnitId
-                    - endDate
-                    - extra
-                    - slotStartTime
-                    - startDate
-                    - schemaSlotSize
-                    - timebands
+                              description: Id della prestazione
+                            priorityClasses:
+                              type: array
+                              items:
+                                type: string
+                              description: Lista identificativi delle priorita' con la quale e' possibile
+                                erogare questa prestazione
+                            supplyModes:
+                              type: array
+                              items:
+                                type: string
+                              description: Lista identificativi dei regimi di erogazione con la quale e'
+                                possibile erogare questa prestazione
+                          required:
+                            - duration
+                            - id
+                            - priorityClasses
+                            - supplyModes
+                      priorityClasses:
+                        type: array
+                        items:
+                          type: string
+                        description: Lista id priorita'
+                      startTime:
+                        type: string
+                        description: Ora di inizio della fascia in formato Unix epoch
+                      supplyModes:
+                        type: array
+                        description: Lista dei regimi di erogazione permessi per la fascia
+                        items:
+                          type: object
+                          properties:
+                            lastUpdate:
+                              type: string
+                              description: Data/ora ultimo aggiornamento
+                            supplyModeId:
+                              type: string
+                              description: Id del regime di erogazione
+                          required:
+                            - lastUpdate
+                            - supplyModeId
+                      weekday:
+                        type: integer
+                        description: Giorno della settimana. (1=LUN, 7=DOM)
+                    required:
+                      - endTime
+                      - maxQuantity
+                      - orders
+                      - priorityClasses
+                      - startTime
+                      - supplyModes
+                      - weekday
               required:
-                - schemas
+                - diaryId
+                - executionUnitId
+                - endDate
+                - extra
+                - slotStartTime
+                - startDate
+                - schemaSlotSize
+                - timebands
         required: true
       parameters:
         - schema:
@@ -824,6 +832,80 @@ paths:
       responses:
         "200":
           description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  authority:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        description: Identificativo dell'authority
+                      name:
+                        type: string
+                        description: Nome dell'authority
+                      hospital:
+                        type: array
+                        description: Lista degli ospedali
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              description: Identificativo dell'ospedale
+                            name:
+                              type: string
+                              description: Nome dell'ospedale
+                            sites:
+                              type: array
+                              description: Lista delle sedi
+                              items:
+                                type: object
+                                properties:
+                                  id:
+                                    type: string
+                                    description: Identificativo della sede
+                                  name:
+                                    type: string
+                                    description: Nome della sede
+                                  operationUnits:
+                                    type: array
+                                    description: Lista delle unita' operative
+                                    items:
+                                      type: object
+                                      properties:
+                                        id:
+                                          type: string
+                                          description: Identificativo dell'unita' operativa
+                                        name:
+                                          type: string
+                                          description: Nome dell'unita' operativa
+                                        executionUnits:
+                                          type: array
+                                          description: Lista delle unita' esecutive
+                                          items:
+                                            type: object
+                                            properties:
+                                              id:
+                                                type: string
+                                                description: Identificativo dell'unita' esecutiva
+                                              name:
+                                                type: string
+                                                description: Nome dell'unita' esecutiva
+                                              diaries:
+                                                type: array
+                                                description: Lista delle agende
+                                                items:
+                                                  type: object
+                                                  properties:
+                                                    id:
+                                                      type: string
+                                                      description: Identificativo dell'agenda
+                                                    name:
+                                                      type: string
+                                                      description: Nome dell'agenda
   /api/cup/suspension:
     post:
       summary: Inserimento di una sospensione
@@ -910,8 +992,6 @@ paths:
           description: Default Response
   "/api/v4/process-apis/booking-management/bookings/{bookingCode}":
     delete:
-      tags:
-        - Incoming V4
       parameters:
         - schema:
             type: string
@@ -952,7 +1032,7 @@ paths:
                       bookingCode:
                         type: string
                         description: Eventuale codice della prenotazione
-                      ExecutionDateTime:
+                      executionDateTime:
                         type: string
                         description: Data/ora erogazione della prestazione in formato Unix epoch
                       scheduledDatetime:
@@ -977,7 +1057,7 @@ paths:
                         type: string
                         description: Branca della prestazione
                     required:
-                      - ExecutionDateTime
+                      - executionDateTime
                       - scheduledDatetime
                       - serviceCode
                 directEntry:
@@ -1067,42 +1147,43 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                admissionIdentification:
-                  type: object
-                  description: Rappresenta il tipo di codice identificativo e lo stesso codice
-                    utilizzati per identificare un'accettazione.
-                  properties:
-                    identifiedBy:
-                      type: string
-                      enum:
-                        - CODICE_ACCETTAZIONE
-                        - NUMERO_RICETTA
-                      description: Tipo di codice con cui identificare l'accettazione.
-                    identifier:
-                      type: string
-                      description: Identificativo dell'accettazione. Varia in base al tipo di
-                        identificativo scelto nel campo identifiedBy
-                  required:
-                    - identifiedBy
-                    - identifier
-                admissionStatus:
-                  type: string
-                  enum:
-                    - DA_EROGARE
-                    - ELIMINATA
-                    - EROGATA
-                    - NON_EROGATA
-                    - PRESCRITTA
-                  description: Nuovo stato da assegnare all'accettazione.
-                reasonId:
-                  type: integer
-                  description: Identificativo motivazione del cambio di stato. Necessaria solo nel
-                    caso di stato NON_EROGATA.
-              required:
-                - admissionStatus
-        required: true
+              type: array
+              items:
+                type: object
+                properties:
+                  admissionIdentification:
+                    type: object
+                    description: Rappresenta il tipo di codice identificativo e lo stesso codice
+                      utilizzati per identificare un'accettazione.
+                    properties:
+                      identifiedBy:
+                        type: string
+                        enum:
+                          - CODICE_ACCETTAZIONE
+                          - NUMERO_RICETTA
+                        description: Tipo di codice con cui identificare l'accettazione.
+                      identifier:
+                        type: string
+                        description: Identificativo dell'accettazione. Varia in base al tipo di
+                          identificativo scelto nel campo identifiedBy
+                    required:
+                      - identifiedBy
+                      - identifier
+                  admissionStatus:
+                    type: string
+                    enum:
+                      - DA_EROGARE
+                      - ELIMINATA
+                      - EROGATA
+                      - NON_EROGATA
+                      - PRESCRITTA
+                    description: Nuovo stato da assegnare all'accettazione.
+                  reasonId:
+                    type: integer
+                    description: Identificativo motivazione del cambio di stato. Necessaria solo nel
+                      caso di stato NON_EROGATA.
+                required:
+                  - admissionStatus
       responses:
         "200":
           description: Default Response
