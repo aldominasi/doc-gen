@@ -992,6 +992,8 @@ paths:
           description: Default Response
   "/api/v4/process-apis/booking-management/bookings/{bookingCode}":
     delete:
+      tags:
+        - Incoming V4
       parameters:
         - schema:
             type: string
@@ -1032,7 +1034,7 @@ paths:
                       bookingCode:
                         type: string
                         description: Eventuale codice della prenotazione
-                      executionDateTime:
+                      executionDatetime:
                         type: string
                         description: Data/ora erogazione della prestazione in formato Unix epoch
                       scheduledDatetime:
@@ -1057,7 +1059,7 @@ paths:
                         type: string
                         description: Branca della prestazione
                     required:
-                      - executionDateTime
+                      - executionDatetime
                       - scheduledDatetime
                       - serviceCode
                 directEntry:
@@ -1184,6 +1186,324 @@ paths:
                       caso di stato NON_EROGATA.
                 required:
                   - admissionStatus
+      responses:
+        "200":
+          description: Default Response
+  /api/log/login/:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              required:
+                - username
+                - password
+        required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    default: false
+                  code:
+                    type: string
+                    default: ""
+                  msg:
+                    type: string
+                    default: ok
+                  data:
+                    nullable: true
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                      ruolo:
+                        type: string
+                        enum:
+                          - ADMIN
+                          - READ_OPERATOR
+  /api/log/roles/:
+    get:
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    default: false
+                  code:
+                    type: string
+                    default: ""
+                  msg:
+                    type: string
+                    default: ok
+                  data:
+                    nullable: true
+                    type: array
+                    items:
+                      type: string
+                    examples:
+                      ADMIN:
+                        value: ADMIN
+                      READ_OPERATOR:
+                        value: READ_OPERATOR
+  /api/log/infologs/:
+    get:
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: idGruppo
+          required: true
+        - schema:
+            type: integer
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+        - schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+          in: query
+          name: limit
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    default: false
+                  code:
+                    type: string
+                    default: ""
+                  msg:
+                    type: string
+                    default: ok
+                  data:
+                    nullable: true
+                    type: object
+                    properties:
+                      totalRecords:
+                        type: integer
+                      records:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            sezione:
+                              type: string
+                            idGruppo:
+                              type: string
+                              nullable: true
+                            descrizioneEvento:
+                              type: string
+                            username:
+                              type: string
+                            ip:
+                              type: string
+                            userAgent:
+                              type: string
+                              nullable: true
+                            stato:
+                              type: string
+                            idRisorsa:
+                              type: string
+                              nullable: true
+                            operation:
+                              type: string
+                            dataOra:
+                              type: string
+                              format: date-time
+                              nullable: true
+  /api/log/users/:
+    patch:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  attivo:
+                    type: boolean
+                required:
+                  - id
+                  - attivo
+              minItems: 1
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    default: false
+                  code:
+                    type: string
+                    default: ""
+                  msg:
+                    type: string
+                    default: ok
+                  data:
+                    nullable: true
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        successUpdate:
+                          type: boolean
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                idGruppo:
+                  type: string
+                ruolo:
+                  type: string
+                  enum:
+                    - ADMIN
+                    - READ_OPERATOR
+              required:
+                - username
+                - password
+                - idGruppo
+                - ruolo
+        required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    default: false
+                  code:
+                    type: string
+                    default: ""
+                  msg:
+                    type: string
+                    default: ok
+                  data:
+                    nullable: true
+        "201":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  username:
+                    type: string
+                  idGruppo:
+                    type: string
+                  ruolo:
+                    type: string
+                    enum:
+                      - ADMIN
+                      - READ_OPERATOR
+    get:
+      parameters:
+        - schema:
+            type: integer
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+        - schema:
+            type: integer
+            maximum: 100
+          in: query
+          name: limit
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    default: false
+                  code:
+                    type: string
+                    default: ""
+                  msg:
+                    type: string
+                    default: ok
+                  data:
+                    nullable: true
+                    type: object
+                    properties:
+                      totalRecords:
+                        type: integer
+                      records:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                            username:
+                              type: string
+                            idGruppo:
+                              type: string
+                            ruolo:
+                              type: string
+                            attivo:
+                              type: boolean
+  "/api/log/users/{idUser}":
+    delete:
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: idUser
+          required: true
       responses:
         "200":
           description: Default Response
