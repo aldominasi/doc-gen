@@ -8,6 +8,219 @@ info:
 components:
   schemas: {}
 paths:
+  /api/v4/process-apis/booking-management/bookings/notification:
+    post:
+      tags:
+        - Incoming V4
+      responses:
+        "200":
+          description: Default Response
+  /api/v4/process-apis/booking-management/pre-bookings/notification:
+    post:
+      tags:
+        - Incoming V4
+      responses:
+        "200":
+          description: Default Response
+  "/api/v4/process-apis/booking-management/bookings/{bookingCode}":
+    delete:
+      tags:
+        - Incoming V4
+      parameters:
+        - schema:
+            type: string
+            minLength: 1
+          in: path
+          name: bookingCode
+          required: true
+      responses:
+        "200":
+          description: Default Response
+  /api/v4/process-apis/booking-management/bookings:
+    post:
+      tags:
+        - Incoming V4
+      responses:
+        "200":
+          description: Default Response
+  /api/v4/admission:
+    post:
+      summary: Notifica di accettazione
+      tags:
+        - Outgoing V4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                admissionTypeId:
+                  type: string
+                  description: Id tipologia di accettazione
+                details:
+                  type: array
+                  description: Elenco dettagli prestazioni
+                  items:
+                    type: object
+                    properties:
+                      bookingCode:
+                        type: string
+                        description: Eventuale codice della prenotazione
+                      executionDatetime:
+                        type: string
+                        description: Data/ora erogazione della prestazione in formato Unix epoch
+                      scheduledDatetime:
+                        type: string
+                        description: Data/ora di presunta erogazione in formato Unix epoch
+                      bookingDate:
+                        type: string
+                      phoneNumber:
+                        type: string
+                        description: Numero di telefono paziente per eventuali comunicazioni,
+                          obbligatorio se assente reasonDenyPhoneNumber
+                      quantity:
+                        type: number
+                        description: Quantita'
+                      reasonDenyPhoneNumber:
+                        type: string
+                        description: Motivazione indisponibilità numero di telefono
+                      serviceCode:
+                        type: string
+                        description: Codice prestazione
+                      specializationCode:
+                        type: string
+                        description: Branca della prestazione
+                    required:
+                      - executionDatetime
+                      - scheduledDatetime
+                      - serviceCode
+                directEntry:
+                  type: boolean
+                  description: Flag per indicare se accesso diretto
+                executionUnitId:
+                  type: string
+                  description: Identificativo di sistema dell'unità erogante
+                personIdentifier:
+                  type: string
+                  description: "Codice Identificativo della persona: CF, ENI o STP"
+                prescription:
+                  type: object
+                  description: Informazioni relative alla ricetta
+                  properties:
+                    compilationDatetime:
+                      type: number
+                      description: Data compilazione ricetta in formato Unix epoch
+                    diagnosisCode:
+                      type: string
+                      description: Codice dell'eventuale diagnosi
+                    doctorIdentifier:
+                      type: string
+                      description: Codice fiscale medico che ha emesso la ricetta
+                    doctorType:
+                      type: string
+                      description: Tipologia del medico
+                    exemptionCode:
+                      type: string
+                      description: Identificativo ministeriale dell'eventuale esenzione
+                    nreAccessType:
+                      type: string
+                      enum:
+                        - ACCESSO_SUCCESSIVO
+                        - PRIMO_ACCESSO
+                      description: Tipo di accesso
+                    prescriptionNumber:
+                      type: string
+                      description: Numero ricetta
+                    priorityClass:
+                      type: string
+                      enum:
+                        - B
+                        - D
+                        - P
+                        - U
+                      description: Classe di priorita' della ricetta
+                  required:
+                    - compilationDatetime
+                    - doctorType
+                    - priorityClass
+                prescriptionNRE:
+                  type: string
+                  description: Numero di ricetta elettronica, obbligatorio se assente l'oggetto
+                    prescription
+                site:
+                  type: object
+                  description: Informazioni della sede
+                  properties:
+                    identifiedBy:
+                      type: string
+                      description: Campo per indicare tipologia di indentificazione della sede
+                    identifier:
+                      type: string
+                      description: Codice identificativo della sede
+                  required:
+                    - identifiedBy
+                    - identifier
+                supplyModeCategoryId:
+                  type: string
+                  description: Id categoria regime di erogazione.
+              required:
+                - admissionTypeId
+                - details
+                - personIdentifier
+                - site
+                - supplyModeCategoryId
+        required: true
+      responses:
+        "200":
+          description: Default Response
+    patch:
+      summary: Modifica lo stato dell'accettazione
+      tags:
+        - Outgoing V4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  admissionIdentification:
+                    type: object
+                    description: Rappresenta il tipo di codice identificativo e lo stesso codice
+                      utilizzati per identificare un'accettazione.
+                    properties:
+                      identifiedBy:
+                        type: string
+                        enum:
+                          - CODICE_ACCETTAZIONE
+                          - NUMERO_RICETTA
+                        description: Tipo di codice con cui identificare l'accettazione.
+                      identifier:
+                        type: string
+                        description: Identificativo dell'accettazione. Varia in base al tipo di
+                          identificativo scelto nel campo identifiedBy
+                    required:
+                      - identifiedBy
+                      - identifier
+                  admissionStatus:
+                    type: string
+                    enum:
+                      - DA_EROGARE
+                      - ELIMINATA
+                      - EROGATA
+                      - NON_EROGATA
+                      - PRESCRITTA
+                    description: Nuovo stato da assegnare all'accettazione.
+                  reasonId:
+                    type: integer
+                    description: Identificativo motivazione del cambio di stato. Necessaria solo nel
+                      caso di stato NON_EROGATA.
+                required:
+                  - admissionStatus
+      responses:
+        "200":
+          description: Default Response
   "/api/cup/{diaryId}":
     put:
       summary: Aggiornamento dell'agenda
@@ -942,9 +1155,15 @@ paths:
                 toDate:
                   type: string
                   description: Data di fine della sospensione in formato Unix epoch
+                toTime:
+                  type: string
+                  description: Ora di fine della sospensione.
                 fromDate:
                   type: string
                   description: Data di inizio della sospensione in formato Unix epoch
+                fromTime:
+                  type: string
+                  description: Ora di inizio della sospensione.
                 operationUnitId:
                   type: string
                   description: Id unita' operativa
@@ -977,219 +1196,6 @@ paths:
                 - operationUnitId
                 - weekdayMask
         required: true
-      responses:
-        "200":
-          description: Default Response
-  /api/v4/process-apis/booking-management/bookings/notification:
-    post:
-      tags:
-        - Incoming V4
-      responses:
-        "200":
-          description: Default Response
-  /api/v4/process-apis/booking-management/pre-bookings/notification:
-    post:
-      tags:
-        - Incoming V4
-      responses:
-        "200":
-          description: Default Response
-  "/api/v4/process-apis/booking-management/bookings/{bookingCode}":
-    delete:
-      tags:
-        - Incoming V4
-      parameters:
-        - schema:
-            type: string
-            minLength: 1
-          in: path
-          name: bookingCode
-          required: true
-      responses:
-        "200":
-          description: Default Response
-  /api/v4/process-apis/booking-management/bookings:
-    post:
-      tags:
-        - Incoming V4
-      responses:
-        "200":
-          description: Default Response
-  /api/v4/admission:
-    post:
-      summary: Notifica di accettazione
-      tags:
-        - Outgoing V4
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                admissionTypeId:
-                  type: string
-                  description: Id tipologia di accettazione
-                details:
-                  type: array
-                  description: Elenco dettagli prestazioni
-                  items:
-                    type: object
-                    properties:
-                      bookingCode:
-                        type: string
-                        description: Eventuale codice della prenotazione
-                      executionDatetime:
-                        type: string
-                        description: Data/ora erogazione della prestazione in formato Unix epoch
-                      scheduledDatetime:
-                        type: string
-                        description: Data/ora di presunta erogazione in formato Unix epoch
-                      bookingDate:
-                        type: string
-                      phoneNumber:
-                        type: string
-                        description: Numero di telefono paziente per eventuali comunicazioni,
-                          obbligatorio se assente reasonDenyPhoneNumber
-                      quantity:
-                        type: number
-                        description: Quantita'
-                      reasonDenyPhoneNumber:
-                        type: string
-                        description: Motivazione indisponibilità numero di telefono
-                      serviceCode:
-                        type: string
-                        description: Codice prestazione
-                      specializationCode:
-                        type: string
-                        description: Branca della prestazione
-                    required:
-                      - executionDatetime
-                      - scheduledDatetime
-                      - serviceCode
-                directEntry:
-                  type: boolean
-                  description: Flag per indicare se accesso diretto
-                executionUnitId:
-                  type: string
-                  description: Identificativo di sistema dell'unità erogante
-                personIdentifier:
-                  type: string
-                  description: "Codice Identificativo della persona: CF, ENI o STP"
-                prescription:
-                  type: object
-                  description: Informazioni relative alla ricetta
-                  properties:
-                    compilationDatetime:
-                      type: number
-                      description: Data compilazione ricetta in formato Unix epoch
-                    diagnosisCode:
-                      type: string
-                      description: Codice dell'eventuale diagnosi
-                    doctorIdentifier:
-                      type: string
-                      description: Codice fiscale medico che ha emesso la ricetta
-                    doctorType:
-                      type: string
-                      description: Tipologia del medico
-                    exemptionCode:
-                      type: string
-                      description: Identificativo ministeriale dell'eventuale esenzione
-                    nreAccessType:
-                      type: string
-                      enum:
-                        - ACCESSO_SUCCESSIVO
-                        - PRIMO_ACCESSO
-                      description: Tipo di accesso
-                    prescriptionNumber:
-                      type: string
-                      description: Numero ricetta
-                    priorityClass:
-                      type: string
-                      enum:
-                        - B
-                        - D
-                        - P
-                        - U
-                      description: Classe di priorita' della ricetta
-                  required:
-                    - compilationDatetime
-                    - doctorType
-                    - priorityClass
-                prescriptionNRE:
-                  type: string
-                  description: Numero di ricetta elettronica, obbligatorio se assente l'oggetto
-                    prescription
-                site:
-                  type: object
-                  description: Informazioni della sede
-                  properties:
-                    identifiedBy:
-                      type: string
-                      description: Campo per indicare tipologia di indentificazione della sede
-                    identifier:
-                      type: string
-                      description: Codice identificativo della sede
-                  required:
-                    - identifiedBy
-                    - identifier
-                supplyModeCategoryId:
-                  type: string
-                  description: Id categoria regime di erogazione.
-              required:
-                - admissionTypeId
-                - details
-                - personIdentifier
-                - site
-                - supplyModeCategoryId
-        required: true
-      responses:
-        "200":
-          description: Default Response
-    patch:
-      summary: Modifica lo stato dell'accettazione
-      tags:
-        - Outgoing V4
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                type: object
-                properties:
-                  admissionIdentification:
-                    type: object
-                    description: Rappresenta il tipo di codice identificativo e lo stesso codice
-                      utilizzati per identificare un'accettazione.
-                    properties:
-                      identifiedBy:
-                        type: string
-                        enum:
-                          - CODICE_ACCETTAZIONE
-                          - NUMERO_RICETTA
-                        description: Tipo di codice con cui identificare l'accettazione.
-                      identifier:
-                        type: string
-                        description: Identificativo dell'accettazione. Varia in base al tipo di
-                          identificativo scelto nel campo identifiedBy
-                    required:
-                      - identifiedBy
-                      - identifier
-                  admissionStatus:
-                    type: string
-                    enum:
-                      - DA_EROGARE
-                      - ELIMINATA
-                      - EROGATA
-                      - NON_EROGATA
-                      - PRESCRITTA
-                    description: Nuovo stato da assegnare all'accettazione.
-                  reasonId:
-                    type: integer
-                    description: Identificativo motivazione del cambio di stato. Necessaria solo nel
-                      caso di stato NON_EROGATA.
-                required:
-                  - admissionStatus
       responses:
         "200":
           description: Default Response
@@ -1422,6 +1428,35 @@ paths:
                         enum:
                           - ADMIN
                           - READ_OPERATOR
+  /api/log/roles/:
+    get:
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    default: false
+                  code:
+                    type: string
+                    default: ""
+                  msg:
+                    type: string
+                    default: ok
+                  data:
+                    nullable: true
+                    type: array
+                    items:
+                      type: string
+                    examples:
+                      ADMIN:
+                        value: ADMIN
+                      READ_OPERATOR:
+                        value: READ_OPERATOR
   /api/log/users/changePwd:
     patch:
       requestBody:
@@ -1678,35 +1713,6 @@ paths:
                     enum:
                       - ADMIN
                       - READ_OPERATOR
-  /api/log/roles/:
-    get:
-      responses:
-        "200":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: boolean
-                    default: false
-                  code:
-                    type: string
-                    default: ""
-                  msg:
-                    type: string
-                    default: ok
-                  data:
-                    nullable: true
-                    type: array
-                    items:
-                      type: string
-                    examples:
-                      ADMIN:
-                        value: ADMIN
-                      READ_OPERATOR:
-                        value: READ_OPERATOR
 tags:
   - name: Cup
     description: API di configurazione delle strutture sul CUP regionale
