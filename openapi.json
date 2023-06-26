@@ -8,219 +8,6 @@ info:
 components:
   schemas: {}
 paths:
-  /api/v4/process-apis/booking-management/bookings/notification:
-    post:
-      tags:
-        - Incoming V4
-      responses:
-        "200":
-          description: Default Response
-  /api/v4/process-apis/booking-management/pre-bookings/notification:
-    post:
-      tags:
-        - Incoming V4
-      responses:
-        "200":
-          description: Default Response
-  "/api/v4/process-apis/booking-management/bookings/{bookingCode}":
-    delete:
-      tags:
-        - Incoming V4
-      parameters:
-        - schema:
-            type: string
-            minLength: 1
-          in: path
-          name: bookingCode
-          required: true
-      responses:
-        "200":
-          description: Default Response
-  /api/v4/process-apis/booking-management/bookings:
-    post:
-      tags:
-        - Incoming V4
-      responses:
-        "200":
-          description: Default Response
-  /api/v4/admission:
-    post:
-      summary: Notifica di accettazione
-      tags:
-        - Outgoing V4
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                admissionTypeId:
-                  type: string
-                  description: Id tipologia di accettazione
-                details:
-                  type: array
-                  description: Elenco dettagli prestazioni
-                  items:
-                    type: object
-                    properties:
-                      bookingCode:
-                        type: string
-                        description: Eventuale codice della prenotazione
-                      executionDatetime:
-                        type: string
-                        description: Data/ora erogazione della prestazione in formato Unix epoch
-                      scheduledDatetime:
-                        type: string
-                        description: Data/ora di presunta erogazione in formato Unix epoch
-                      bookingDate:
-                        type: string
-                      phoneNumber:
-                        type: string
-                        description: Numero di telefono paziente per eventuali comunicazioni,
-                          obbligatorio se assente reasonDenyPhoneNumber
-                      quantity:
-                        type: number
-                        description: Quantita'
-                      reasonDenyPhoneNumber:
-                        type: string
-                        description: Motivazione indisponibilità numero di telefono
-                      serviceCode:
-                        type: string
-                        description: Codice prestazione
-                      specializationCode:
-                        type: string
-                        description: Branca della prestazione
-                    required:
-                      - executionDatetime
-                      - scheduledDatetime
-                      - serviceCode
-                directEntry:
-                  type: boolean
-                  description: Flag per indicare se accesso diretto
-                executionUnitId:
-                  type: string
-                  description: Identificativo di sistema dell'unità erogante
-                personIdentifier:
-                  type: string
-                  description: "Codice Identificativo della persona: CF, ENI o STP"
-                prescription:
-                  type: object
-                  description: Informazioni relative alla ricetta
-                  properties:
-                    compilationDatetime:
-                      type: number
-                      description: Data compilazione ricetta in formato Unix epoch
-                    diagnosisCode:
-                      type: string
-                      description: Codice dell'eventuale diagnosi
-                    doctorIdentifier:
-                      type: string
-                      description: Codice fiscale medico che ha emesso la ricetta
-                    doctorType:
-                      type: string
-                      description: Tipologia del medico
-                    exemptionCode:
-                      type: string
-                      description: Identificativo ministeriale dell'eventuale esenzione
-                    nreAccessType:
-                      type: string
-                      enum:
-                        - ACCESSO_SUCCESSIVO
-                        - PRIMO_ACCESSO
-                      description: Tipo di accesso
-                    prescriptionNumber:
-                      type: string
-                      description: Numero ricetta
-                    priorityClass:
-                      type: string
-                      enum:
-                        - B
-                        - D
-                        - P
-                        - U
-                      description: Classe di priorita' della ricetta
-                  required:
-                    - compilationDatetime
-                    - doctorType
-                    - priorityClass
-                prescriptionNRE:
-                  type: string
-                  description: Numero di ricetta elettronica, obbligatorio se assente l'oggetto
-                    prescription
-                site:
-                  type: object
-                  description: Informazioni della sede
-                  properties:
-                    identifiedBy:
-                      type: string
-                      description: Campo per indicare tipologia di indentificazione della sede
-                    identifier:
-                      type: string
-                      description: Codice identificativo della sede
-                  required:
-                    - identifiedBy
-                    - identifier
-                supplyModeCategoryId:
-                  type: string
-                  description: Id categoria regime di erogazione.
-              required:
-                - admissionTypeId
-                - details
-                - personIdentifier
-                - site
-                - supplyModeCategoryId
-        required: true
-      responses:
-        "200":
-          description: Default Response
-    patch:
-      summary: Modifica lo stato dell'accettazione
-      tags:
-        - Outgoing V4
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                type: object
-                properties:
-                  admissionIdentification:
-                    type: object
-                    description: Rappresenta il tipo di codice identificativo e lo stesso codice
-                      utilizzati per identificare un'accettazione.
-                    properties:
-                      identifiedBy:
-                        type: string
-                        enum:
-                          - CODICE_ACCETTAZIONE
-                          - NUMERO_RICETTA
-                        description: Tipo di codice con cui identificare l'accettazione.
-                      identifier:
-                        type: string
-                        description: Identificativo dell'accettazione. Varia in base al tipo di
-                          identificativo scelto nel campo identifiedBy
-                    required:
-                      - identifiedBy
-                      - identifier
-                  admissionStatus:
-                    type: string
-                    enum:
-                      - DA_EROGARE
-                      - ELIMINATA
-                      - EROGATA
-                      - NON_EROGATA
-                      - PRESCRITTA
-                    description: Nuovo stato da assegnare all'accettazione.
-                  reasonId:
-                    type: integer
-                    description: Identificativo motivazione del cambio di stato. Necessaria solo nel
-                      caso di stato NON_EROGATA.
-                required:
-                  - admissionStatus
-      responses:
-        "200":
-          description: Default Response
   "/api/cup/{diaryId}":
     put:
       summary: Aggiornamento dell'agenda
@@ -578,6 +365,11 @@ paths:
                           fiscalCode:
                             type: string
                             description: Codice fiscale del dottore
+                          isPrimary:
+                            type: boolean
+                          roleCode:
+                            type: string
+                            description: Ruolo dottore appartenente all'unita' erogante
                         required:
                           - endDate
                           - startDate
@@ -585,15 +377,29 @@ paths:
                     registry:
                       type: object
                       properties:
+                        automaticSupply:
+                          type: boolean
+                          description: Unità abilitata all'erogazione in fase di accettazione
+                        code:
+                          type: string
+                          description: Codice unita' erogante
                         description:
                           type: string
                           description: Descrizione dell'unità erogante
+                        directAdmission:
+                          type: boolean
+                          description: Unità abilitata all'accettazione senza prenotazione
                         endDate:
                           type: string
                           description: Fine validita' dell'unita' erogante
                         name:
                           type: string
                           description: Nome dell'unita' erogante
+                        notes:
+                          type: string
+                        place:
+                          type: string
+                          description: Indirizzo Unita' Erogante
                         idOperationUnit:
                           type: string
                           description: Id Unita' Operativa
@@ -668,10 +474,28 @@ paths:
                       type: integer
                       description: "Tipologia accesso agenda: 1-> Primo accesso, 0-> Accesso
                         successivo, -1-> Entrambi"
+                    overbook:
+                      type: boolean
+                      description: Flag di attivazione overbook. Permette di aggirare i vincoli di
+                        massimale su slot, fascia o giornata
                     allCovers:
                       type: boolean
                       description: Indica se associare tutte le coperture economiche disponibili. Se
                         false, considera il campo coverIds.
+                    availabilityDelay:
+                      type: number
+                      description: L'agenda mostra disponibilita' a partire da AVAILABILITY_DELAY
+                        (ORE) da adesso.
+                    code:
+                      type: string
+                      description: Codice agenda
+                    coverIds:
+                      type: array
+                      items:
+                        type: string
+                      description: Lista identificativi coperture economiche. Se si vogliono
+                        selezionare tutte le coperture, utilizzare il campo
+                        allCovers.
                     defaultFreeBookingDate:
                       type: boolean
                       description: Imposta data default in forzatura libera
@@ -688,6 +512,15 @@ paths:
                           costCenter:
                             type: string
                             description: Id del Centro di costo collegato al regime agenda.
+                          id:
+                            type: integer
+                            description: Id della relazione tra Agenda e Regime di erogazione. Da lasciare
+                              vuoto in fase di creazione.
+                          priceListId:
+                            type: string
+                            description: "Id del listino associato all'agenda per questo particolare regime
+                              di erogazione.Vedi Schema PriceListR.id recuperato
+                              da GET: /api/v3/system-apis/pricelists"
                           supplyModeId:
                             type: string
                             description: Id del regime
@@ -707,6 +540,25 @@ paths:
                           - supplyModeId
                           - endDate
                           - startDate
+                    doctors:
+                      type: array
+                      items:
+                        type: string
+                        description: Lista identificativi dei medici erogatori dell'agenda
+                    diagnosis:
+                      type: array
+                      items:
+                        type: string
+                        description: "Lista di Id diagnosi vedi schema DiagnosisR.id recuperato da GET:
+                          /api/v3/system-apis/diagnosis"
+                    diaryAsls:
+                      type: array
+                      items:
+                        type: string
+                        description: Lista Id delle ASL a cui l'agenda e' relazionata
+                    externalCode:
+                      type: string
+                      description: Identificativo dell'agenda interno degli enti accreditati.
                     forResidents:
                       type: boolean
                       description: true se l'agenda e' riservabile per i residenti
@@ -716,24 +568,168 @@ paths:
                     freeForceNotesNeeded:
                       type: boolean
                       description: Identifica se le note in forzatura libera sono obbligatorie
+                    freeForceMaxDistance:
+                      type: number
+                      description: "Numero di giorni massimo che possono intercorrere tra la data
+                        odierna e la data in cui si vuole effettuare una
+                        forzatura libera. Valore negativo: distanza nel passato"
+                    freeForceMaxNumber:
+                      type: number
+                      description: Numero massimo di forzature libere previste per ogni giorno
+                        sull'agenda
+                    freeForceMinDistance:
+                      type: number
+                      description: "Numero di giorni minimo che devono intercorrere tra la data
+                        odierna e la data in cui si vuole effettuare una
+                        forzatura libera. Valore negativo: distanza nel passato"
+                    freeForcePlaceHold:
+                      type: boolean
+                      description: Se true, le forzature libere occupano posto. (default true)
+                    holderId:
+                      type: string
+                      description: Id del titolare dell'agenda, medico LP o equipe medica, vedi schema
+                        DoctorR.id
+                    hospitalWardId:
+                      type: string
+                      description: Per agende con regime interno, indica che l'agenda e' per tutti i
+                        reparti del presidio identificato dall'hospitalId
+                    id:
+                      type: string
+                      description: Identificativo di sistema dell'agenda, obbligatorio per le chiamate
+                        di aggiornamento (PUT)
+                    isInFirstAvail:
+                      type: boolean
+                      description: Se true, agenda viene presa in considerazione nella ricerca
+                        migliore disponibilita'
+                    manageSpecialProjects:
+                      type: boolean
+                      description: Flag che indica se in agenda vengono gestiti progetti speciali
+                    maxAvailabilityHours:
+                      type: number
+                      description: Indica le ore, sommate alla data di ricerca disp. per cui puo'
+                        essere ricercata disponibilita' su questa agenda
                     name:
                       type: string
                       description: Nome agenda
                     onlyAdjacentSlots:
                       type: boolean
                       description: Se true, la prenotazione avviene solo su slots consecutivi.
+                    orderGroups:
+                      type: array
+                      description: Lista di raggruppamenti prestazioni.
+                      items:
+                        type: object
+                        properties:
+                          durationType:
+                            type: string
+                            description: "Tipo di misurazione: 0-> durata in slot, 1-> durata in minuti"
+                          id:
+                            type: string
+                            description: Codice del raggruppamento prestazioni
+                          orderDuration2:
+                            type: string
+                            description: Durata raggruppamento per 2 prestazioni. Se non specificata, la
+                              durata è pari alla somma delle singole durate
+                          orderDuration3:
+                            type: string
+                            description: Durata raggruppamento per 3 prestazioni. Se non specificata, la
+                              durata è pari alla somma delle singole durate
+                          orderDuration4:
+                            type: string
+                            description: Durata raggruppamento per 4 prestazioni. Se non specificata, la
+                              durata è pari alla somma delle singole durate
+                          orderDuration5:
+                            type: string
+                            description: Durata raggruppamento per 5 prestazioni. Se non specificata, la
+                              durata è pari alla somma delle singole durate
+                          orderDuration6:
+                            type: string
+                            description: Durata raggruppamento per 6 prestazioni. Se non specificata, la
+                              durata è pari alla somma delle singole durate
+                          orderDuration7:
+                            type: string
+                            description: Durata raggruppamento per 7 prestazioni. Se non specificata, la
+                              durata è pari alla somma delle singole durate
+                          orderDuration8:
+                            type: string
+                            description: Durata raggruppamento per 8 prestazioni. Se non specificata, la
+                              durata è pari alla somma delle singole durate
+                        required:
+                          - durationType
                     orders:
                       type: array
                       description: Lista delle prestazioni associate all'agenda
                       items:
                         type: object
                         properties:
+                          allDiagnosis:
+                            type: boolean
+                            description: Se true la prestazione vale per tutte le diagnosi dell'agenda
+                          availabilityDelay:
+                            type: number
+                            description: L'agenda mostra disponibilita', per la prestazione, a partire da
+                              AVAILABILITY_DELAY (ORE) da adesso.
+                          bloodDraw:
+                            type: boolean
+                            description: Indica se la prestazione e' di tipo Prelievo di sangue
+                          diagnosis:
+                            type: array
+                            items:
+                              type: string
+                            description: "Lista Id della diagnosi vedi schema DiagnosisR.id recuperato da
+                              GET: /api/v3/system-apis/diagnosis"
                           duration:
                             type: integer
                             description: Tempo necessario per l'esecuzione della prestazione
+                          extracup:
+                            type: boolean
+                            description: Indica se la prestazione e' prenotabile da un cup esterno tramite
+                              integrazioni.
+                          groupable:
+                            type: boolean
+                            description: Indica se la prestazione puo' essere erogata insieme ad altre
+                              prestazioni (raggruppamento)
                           id:
                             type: string
                             description: Id della prestazione
+                          maxAge:
+                            type: number
+                            description: Eta' massima del paziente per poter effettuare questa prestazione,
+                              espressa in mesi
+                          minAge:
+                            type: number
+                            description: Eta' minima del paziente per poter effettuare questa prestazione,
+                              espressa in mesi
+                          notes:
+                            type: string
+                            description: Note per la prestazione, apparia' nel promemoria che verra'
+                              lasciato al paziente
+                          online:
+                            type: boolean
+                            description: Indica se la prestazione e' prenotabile online
+                          orderNotes:
+                            type: array
+                            items:
+                              type: string
+                            description: Lista di note associate alla prestazione
+                          preparationTime:
+                            type: number
+                            description: Tempo di preparazione prima di poter eseguire la prestazione
+                          priorityClasses:
+                            type: array
+                            items:
+                              type: string
+                            description: Lista identificativi delle priorita' con la quale e' possibile
+                              erogare questa prestazione
+                          resources:
+                            type: array
+                            items:
+                              type: string
+                            description: Lista identificativi delle risorse associate alla prestazione.
+                          userNotes:
+                            type: string
+                            description: Note per l'utente CUP, apparira' all'operatore in fase di
+                              prenotazione
                         required:
                           - duration
                           - id
@@ -767,6 +763,61 @@ paths:
                       type: boolean
                       description: Flag che indica se la prestazione e' prenotabile su sistemi
                         integrati
+                    slotSize:
+                      type: number
+                      description: Grandezza dello slot espressa in minuti
+                    requestWards:
+                      type: array
+                      items:
+                        type: string
+                        description: Lista degli identificativi dei reparti del regime interno.
+                    resources:
+                      type: array
+                      items:
+                        type: string
+                      description: Lista identificativi risorse associate all'agenda.
+                    rules:
+                      type: array
+                      description: Lista di regole per gli sbarramenti. Per sbarramento si intende una
+                        regola che riserva un certo numero di disponibilità ad
+                        una determinata classe di priorita'.
+                      items:
+                        type: object
+                        properties:
+                          fromDay:
+                            type: number
+                            description: numero di giorni (relativo rispetto alla data di calendario) da cui
+                              iniziare l'applicazione delle regola
+                          id:
+                            type: string
+                            description: id della relazione sbarramento - agenda
+                          minQuantity:
+                            type: number
+                            description: "numero minimo di prestazioni in % o numero assoluto, in base al
+                              campo quantityType: 1-> numerico, 2 -> %"
+                          modelId:
+                            type: string
+                            description: "Id dello sbarramento. E' il campo BookingRuleR.id recuperato da
+                              GET: /api/v3/system-apis/bookingrules"
+                          name:
+                            type: string
+                            description: nome dello sbarramento
+                          priorityIds:
+                            type: array
+                            items:
+                              type: number
+                            description: Lista di id delle priorità
+                          quantityType:
+                            type: number
+                            description: "Definisce unita' di misura di minQuantity e maxQuantity: 1->
+                              numerico, 2-> %"
+                          toDay:
+                            type: number
+                            description: numero di giorni (relativo rispetto alla data di calendario) da cui
+                              terminare l'applicazione delle regola
+                          typeId:
+                            type: number
+                            description: Tipologia di regola (su priorità, tipi paziente..)
                     visibility:
                       type: integer
                       description: Giorni di visibilita' agenda
@@ -805,12 +856,33 @@ paths:
                     extra:
                       type: boolean
                       description: Se true, si tratta di una struttura con extra slot disponibili.
+                    overbook:
+                      type: boolean
+                      description: Se true, la struttura consente l'overbook (aggiramento vincoli di
+                        massimale su slot, fascia o giornata)
                     slotStartTime:
                       type: string
                       description: Ora di inizio degli slot di disponibilita' in formato Unix epoch
                     startDate:
                       type: string
                       description: Data di inizio validita' della struttura in formato Unix epoch
+                    excludeFestivities:
+                      type: boolean
+                      description: Se true, esclude i giorni festivi dalle disponibilità. Se false,
+                        ignora le festività e crea la disponibilita'.
+                    forResidents:
+                      type: boolean
+                      description: Se true, struttura riservata per residenti.
+                    forResidentsExpire:
+                      type: number
+                      description: Se forResidents=true, questa colonna indica la data di scandenza
+                        del vincolo di riserva.
+                    notes:
+                      type: string
+                      description: Note struttura.
+                    refSchemaId:
+                      type: string
+                      description: Se e' un extra slot, contiene il riferimnto allo schema originale.
                     schemaSlotSize:
                       type: integer
                       description: Dimensioni dello slot in minuti.
@@ -820,12 +892,96 @@ paths:
                       items:
                         type: object
                         properties:
+                          allDiagnosis:
+                            type: boolean
+                            description: /Se true, la fascia vale per tutte le diagnosi dell'agenda.
+                          bookingsNumber:
+                            type: number
+                            description: Numero delle prenotazioni esistenti per la fascia.
+                          diagnosis:
+                            type: array
+                            items:
+                              type: string
+                            description: "Lista di Id diagnosi vedi schema DiagnosisR.id recuperato da GET:
+                              /api/v3/system-apis/diagnosis"
+                          diagnosisFromDay:
+                            type: number
+                            description: Giorno dal quale gli sbarramenti iniziano ad essere attivi.
+                          doctors:
+                            type: array
+                            description: Lista dei medici erogatori della fascia.
+                            items:
+                              type: object
+                              properties:
+                                code:
+                                  type: string
+                                  description: Codice del medico.
+                                firstName:
+                                  type: string
+                                  description: Nome del medico
+                                fiscalCode:
+                                  type: string
+                                  description: Codice fiscale del medico
+                                id:
+                                  type: string
+                                  description: Id del medico.
+                                lastName:
+                                  type: string
+                                  description: Cognome del medico
                           endTime:
                             type: string
                             description: Ora di fine della fascia in formato Unix epoch
+                          extra:
+                            type: boolean
+                            description: Se true, si tratta di una fascia con extra slot disponibili.
+                          forResidents:
+                            type: boolean
+                            description: Se true, fascia riservata per residenti.
+                          forResidentsExpire:
+                            type: number
+                            description: Se forResidents=true, questa colonna indica la data di scandenza
+                              del vincolo di riserva.
+                          frequency:
+                            type: number
+                            description: "Frequenza prevista per la generazione delle date: 1-> Ogni
+                              settimana, 2-> Ogni 2 settimane, 3-> Ogni 3
+                              settimane, 4-> Ogni 4 settimane, 8-> La prima
+                              occorrenza del mese, 16-> La seconda occorrenza
+                              del mese, 32-> La terza occorrenza del mese, 6->
+                              La quarta occorrenza del mese, 128-> L'ultima
+                              occorrenza del mese, 256-> La quinta occorrenza
+                              del mese"
+                          hasDiagnosis:
+                            type: boolean
+                            description: Se true, la fascia ha associate diagnosi.
+                          hasPriorityRules:
+                            type: boolean
+                            description: Se true, la fascia ha associati sbarramenti priorita.
+                          hospitalWardId:
+                            type: string
+                            description: Per agende con regime interno, indica che la fascia e' per tutti i
+                              reparti del presidio.
+                          id:
+                            type: string
+                            description: Identificativo della fascia. Da lasciare vuoto in fase di creazione
+                              (viene generato in automatico).
+                          manageProjects:
+                            type: boolean
+                            description: Se true, nella fascia vengono gestiti progetti speciali.
+                          maxAge:
+                            type: number
+                            description: Eta' massima del paziente per poter prenotare sulla fascia (in
+                              mesi).
                           maxQuantity:
                             type: integer
                             description: Numero massimo di slots prenotabili nella fascia.
+                          minAge:
+                            type: number
+                            description: Eta' minima del paziente per poter prenotare sulla fascia (in
+                              mesi).
+                          notes:
+                            type: string
+                            description: Note della fascia.
                           orders:
                             type: array
                             description: Lista delle prestazioni prenotabili nella fascia.
@@ -855,11 +1011,34 @@ paths:
                                 - id
                                 - priorityClasses
                                 - supplyModes
+                          overbook:
+                            type: boolean
+                            description: Se true, la fascia consente l'overbook (aggiramento vincoli di
+                              massimale su slot, fascia o giornata)
                           priorityClasses:
                             type: array
                             items:
                               type: string
                             description: Lista id priorita'
+                          requestWards:
+                            type: array
+                            items:
+                              type: string
+                            description: Lista degli identificativi dei reparti del regime interno.
+                          rowVersion:
+                            type: number
+                            description: Contatore modifiche effettuate.
+                          rules:
+                            type: string
+                            description: Lista identificativi degli sbarramenti della fascia.
+                          sex:
+                            type: string
+                            description: "Rappresenta il sesso dei pazienti prenotabili nella fascia
+                              ammessi: M-> Maschile, F-> Femminile."
+                          slotMaxQuantity:
+                            type: number
+                            description: Numero massimo di appuntamenti prenotabili sul singolo slot (salvo
+                              overbook)
                           startTime:
                             type: string
                             description: Ora di inizio della fascia in formato Unix epoch
@@ -872,9 +1051,26 @@ paths:
                                 lastUpdate:
                                   type: string
                                   description: Data/ora ultimo aggiornamento in formato Unix epoch
+                                maxQuantity:
+                                  type: number
+                                  description: Quantita' massima di slots con determinato regime permessi
+                                    (raggiunto MAX, non permette nuovi
+                                    appuntamenti)
+                                minQuantity:
+                                  type: number
+                                  description: Quantita' minima di slots con determinato regime prevista (riserva
+                                    MIN posti ad un determinato regime)
+                                quantityExpire:
+                                  type: number
+                                  description: Giorni a partire da oggi in cui i vincoli min/max iniziano ad avere
+                                    effetto
                                 supplyModeId:
                                   type: string
                                   description: Id del regime di erogazione
+                                timebandId:
+                                  type: string
+                                  description: Id della fascia di riferimento (corrisponde a quella corrente). Da
+                                    lasciare vuoto in fase di creazione fascia.
                               required:
                                 - lastUpdate
                                 - supplyModeId
@@ -888,6 +1084,10 @@ paths:
                           - startTime
                           - supplyModes
                           - weekday
+                    weekDays:
+                      type: number
+                      description: Lista dei giorni della settimana previsti per la struttura. (1=LUN,
+                        7=DOM)
                   required:
                     - endDate
                     - extra
@@ -1173,14 +1373,6 @@ paths:
                   type: boolean
                 weekdayMask:
                   type: integer
-                  enum:
-                    - 1
-                    - 2
-                    - 4
-                    - 8
-                    - 16
-                    - 32
-                    - 64
                   description: "Bitmask dei giorni della settimana: Lunedì = 1, Martedì = 2,
                     Mercoledì = 4, Giovedì = 8, Venerdì = 16, Sabato = 32,
                     Domenica = 64"
@@ -1196,6 +1388,219 @@ paths:
                 - operationUnitId
                 - weekdayMask
         required: true
+      responses:
+        "200":
+          description: Default Response
+  /api/v4/process-apis/booking-management/bookings/notification:
+    post:
+      tags:
+        - Incoming V4
+      responses:
+        "200":
+          description: Default Response
+  /api/v4/process-apis/booking-management/pre-bookings/notification:
+    post:
+      tags:
+        - Incoming V4
+      responses:
+        "200":
+          description: Default Response
+  "/api/v4/process-apis/booking-management/bookings/{bookingCode}":
+    delete:
+      tags:
+        - Incoming V4
+      parameters:
+        - schema:
+            type: string
+            minLength: 1
+          in: path
+          name: bookingCode
+          required: true
+      responses:
+        "200":
+          description: Default Response
+  /api/v4/process-apis/booking-management/bookings:
+    post:
+      tags:
+        - Incoming V4
+      responses:
+        "200":
+          description: Default Response
+  /api/v4/admission:
+    post:
+      summary: Notifica di accettazione
+      tags:
+        - Outgoing V4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                admissionTypeId:
+                  type: string
+                  description: Id tipologia di accettazione
+                details:
+                  type: array
+                  description: Elenco dettagli prestazioni
+                  items:
+                    type: object
+                    properties:
+                      bookingCode:
+                        type: string
+                        description: Eventuale codice della prenotazione
+                      executionDatetime:
+                        type: string
+                        description: Data/ora erogazione della prestazione in formato Unix epoch
+                      scheduledDatetime:
+                        type: string
+                        description: Data/ora di presunta erogazione in formato Unix epoch
+                      bookingDate:
+                        type: string
+                      phoneNumber:
+                        type: string
+                        description: Numero di telefono paziente per eventuali comunicazioni,
+                          obbligatorio se assente reasonDenyPhoneNumber
+                      quantity:
+                        type: number
+                        description: Quantita'
+                      reasonDenyPhoneNumber:
+                        type: string
+                        description: Motivazione indisponibilità numero di telefono
+                      serviceCode:
+                        type: string
+                        description: Codice prestazione
+                      specializationCode:
+                        type: string
+                        description: Branca della prestazione
+                    required:
+                      - executionDatetime
+                      - scheduledDatetime
+                      - serviceCode
+                directEntry:
+                  type: boolean
+                  description: Flag per indicare se accesso diretto
+                executionUnitId:
+                  type: string
+                  description: Identificativo di sistema dell'unità erogante
+                personIdentifier:
+                  type: string
+                  description: "Codice Identificativo della persona: CF, ENI o STP"
+                prescription:
+                  type: object
+                  description: Informazioni relative alla ricetta
+                  properties:
+                    compilationDatetime:
+                      type: number
+                      description: Data compilazione ricetta in formato Unix epoch
+                    diagnosisCode:
+                      type: string
+                      description: Codice dell'eventuale diagnosi
+                    doctorIdentifier:
+                      type: string
+                      description: Codice fiscale medico che ha emesso la ricetta
+                    doctorType:
+                      type: string
+                      description: Tipologia del medico
+                    exemptionCode:
+                      type: string
+                      description: Identificativo ministeriale dell'eventuale esenzione
+                    nreAccessType:
+                      type: string
+                      enum:
+                        - ACCESSO_SUCCESSIVO
+                        - PRIMO_ACCESSO
+                      description: Tipo di accesso
+                    prescriptionNumber:
+                      type: string
+                      description: Numero ricetta
+                    priorityClass:
+                      type: string
+                      enum:
+                        - B
+                        - D
+                        - P
+                        - U
+                      description: Classe di priorita' della ricetta
+                  required:
+                    - compilationDatetime
+                    - doctorType
+                    - priorityClass
+                prescriptionNRE:
+                  type: string
+                  description: Numero di ricetta elettronica, obbligatorio se assente l'oggetto
+                    prescription
+                site:
+                  type: object
+                  description: Informazioni della sede
+                  properties:
+                    identifiedBy:
+                      type: string
+                      description: Campo per indicare tipologia di indentificazione della sede
+                    identifier:
+                      type: string
+                      description: Codice identificativo della sede
+                  required:
+                    - identifiedBy
+                    - identifier
+                supplyModeCategoryId:
+                  type: string
+                  description: Id categoria regime di erogazione.
+              required:
+                - admissionTypeId
+                - details
+                - personIdentifier
+                - site
+                - supplyModeCategoryId
+        required: true
+      responses:
+        "200":
+          description: Default Response
+    patch:
+      summary: Modifica lo stato dell'accettazione
+      tags:
+        - Outgoing V4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  admissionIdentification:
+                    type: object
+                    description: Rappresenta il tipo di codice identificativo e lo stesso codice
+                      utilizzati per identificare un'accettazione.
+                    properties:
+                      identifiedBy:
+                        type: string
+                        enum:
+                          - CODICE_ACCETTAZIONE
+                          - NUMERO_RICETTA
+                        description: Tipo di codice con cui identificare l'accettazione.
+                      identifier:
+                        type: string
+                        description: Identificativo dell'accettazione. Varia in base al tipo di
+                          identificativo scelto nel campo identifiedBy
+                    required:
+                      - identifiedBy
+                      - identifier
+                  admissionStatus:
+                    type: string
+                    enum:
+                      - DA_EROGARE
+                      - ELIMINATA
+                      - EROGATA
+                      - NON_EROGATA
+                      - PRESCRITTA
+                    description: Nuovo stato da assegnare all'accettazione.
+                  reasonId:
+                    type: integer
+                    description: Identificativo motivazione del cambio di stato. Necessaria solo nel
+                      caso di stato NON_EROGATA.
+                required:
+                  - admissionStatus
       responses:
         "200":
           description: Default Response
