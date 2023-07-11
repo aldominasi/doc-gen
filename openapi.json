@@ -187,6 +187,24 @@ paths:
       responses:
         "200":
           description: Default Response
+  /api/cup/doctors:
+    post:
+      summary: Recupero Medici
+      tags:
+        - Cup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                doctors:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        "200":
+          description: Default Response
   /api/cup/:
     put:
       summary: API per l'aggiornamento delle unità eroganti
@@ -654,6 +672,11 @@ paths:
                             type: string
                             description: Durata raggruppamento per 8 prestazioni. Se non specificata, la
                               durata è pari alla somma delle singole durate
+                          orders:
+                            type: array
+                            items:
+                              type: string
+                            description: Lista di prestazioni dell'agenda associate al raggruppamento
                         required:
                           - durationType
                     orders:
@@ -1085,9 +1108,11 @@ paths:
                           - supplyModes
                           - weekday
                     weekDays:
-                      type: number
-                      description: Lista dei giorni della settimana previsti per la struttura. (1=LUN,
-                        7=DOM)
+                      type: array
+                      items:
+                        type: number
+                        description: Lista dei giorni della settimana previsti per la struttura. (1=LUN,
+                          7=DOM)
                   required:
                     - endDate
                     - extra
@@ -1364,6 +1389,10 @@ paths:
                 fromTime:
                   type: string
                   description: Ora di inizio della sospensione.
+                status:
+                  type: number
+                  description: "Stato della sospensione: 0-> ABILITATA, 1-> DISABILITATA, 2->
+                    ELIMINATA"
                 operationUnitId:
                   type: string
                   description: Id unita' operativa
@@ -1387,6 +1416,96 @@ paths:
                 - fromDate
                 - operationUnitId
                 - weekdayMask
+        required: true
+      responses:
+        "200":
+          description: Default Response
+  "/api/cup/suspension/{suspensionId}":
+    put:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                allDiaries:
+                  type: boolean
+                  description: Indica se applicare la sospensione a tutte le agende dell'unita'
+                    erogante.
+                diariesId:
+                  type: array
+                  items:
+                    type: string
+                  description: Lista identificativi agende su cui applicare la sospensione.
+                    Obbligatorio se allDiaries e' FALSE.
+                disableReasonId:
+                  type: string
+                  description: "Identificativo motivazione disattivazione della sospensione. Vedi
+                    schema ReasonR.id recuperato da GET:
+                    /api/v3/system-apis/reasons"
+                fromDate:
+                  type: string
+                  description: Data di inizio della sospensione.
+                fromTime:
+                  type: string
+                  description: Ora di inizio della sospensione.
+                id:
+                  type: integer
+                  description: Identificativo della sospensione, obbligatorio per le chiamate di
+                    aggiornamento (PUT)
+                notes:
+                  type: string
+                  description: Note della sospensione.
+                operationUnitId:
+                  type: string
+                  description: "Id unita' operativa vedi schema OperationUnitR.id recuperato da
+                    GET: /api/v3/system-apis/operationunits"
+                ordersId:
+                  type: array
+                  items:
+                    type: string
+                  description: "Lista identificativi delle prestazioni su cui l'indisponibilita'
+                    agisce. Se vuota, considera tutte le prestazioni. Vedi
+                    schema HealthcareServiceR.id recuperato da GET:
+                    /api/v3/system-apis/healthcareservices"
+                reasonId:
+                  type: string
+                  description: "Identificativo motivazione della sospensione. Vedi schema
+                    ReasonR.id recuperato da GET: /api/v3/system-apis/reasons"
+                siteId:
+                  type: string
+                  description: "Id sede vedi schema HospitalR.id recuperato da GET:
+                    /api/v3/system-apis/sites"
+                status:
+                  type: integer
+                  description: "Stato della sospensione: 0-> ABILITATA, 1-> DISABILITATA, 2->
+                    ELIMINATA"
+                suspBookings:
+                  type: boolean
+                  description: Indica se sospendere gli appuntamenti esistenti all'atto di
+                    creazione/aggiornamento della sospensione.
+                toDate:
+                  type: string
+                  description: Data di fine della sospensione.
+                toTime:
+                  type: string
+                  description: Ora di fine della sospensione.
+                unitId:
+                  type: string
+                  description: "Id unita' erogante vedi schema ExecutionUnitR.id recuperato da
+                    GET: /api/v3/system-apis/executionunits"
+                weekdayMask:
+                  type: integer
+                  description: "Bitmask dei giorni della settimana: Lunedì = 1, Martedì = 2,
+                    Mercoledì = 4, Giovedì = 8, Venerdì = 16, Sabato = 32,
+                    Domenica = 64"
+              required:
+                - fromDate
+                - operationUnitId
+                - reasonId
+                - siteId
+                - toDate
+                - unitId
         required: true
       responses:
         "200":
@@ -1640,6 +1759,11 @@ paths:
           in: query
           name: limit
           required: true
+        - schema:
+            type: string
+          in: query
+          name: string
+          required: false
       responses:
         "200":
           description: Default Response
@@ -1726,6 +1850,90 @@ paths:
           in: query
           name: limit
           required: true
+        - schema:
+            type: string
+          in: query
+          name: string
+          required: false
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    default: false
+                  code:
+                    type: string
+                    default: ""
+                  msg:
+                    type: string
+                    default: ok
+                  data:
+                    nullable: true
+                    type: object
+                    properties:
+                      totalRecords:
+                        type: integer
+                      records:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            sezione:
+                              type: string
+                            operation:
+                              type: string
+                            idGruppo:
+                              type: string
+                              nullable: true
+                            descrizioneEvento:
+                              type: string
+                            dataOra:
+                              type: string
+                              format: date-time
+                              nullable: true
+  /api/log/infologs/successAgenda:
+    get:
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: idGruppo
+          required: true
+        - schema:
+            type: string
+            format: date-time
+          in: query
+          name: dataInizio
+          required: false
+        - schema:
+            type: string
+            format: date-time
+          in: query
+          name: dataFine
+          required: false
+        - schema:
+            type: integer
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+        - schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+          in: query
+          name: limit
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: string
+          required: false
       responses:
         "200":
           description: Default Response
