@@ -4,53 +4,6 @@ info:
   version: 1.0.0
 definitions: {}
 paths:
-  /auth/:
-    post:
-      description: Chiamata per effettuare il login e ricevere il token per effettuare
-        le successive chiamate
-      tags:
-        - Utenti
-      parameters:
-        - name: body
-          in: body
-          schema:
-            $schema: http://json-schema.org/draft-07/schema#
-            type: object
-            additionalProperties: false
-            properties:
-              username:
-                type: string
-              password:
-                type: string
-            required:
-              - username
-              - password
-      responses:
-        "200":
-          description: Default Response
-          schema:
-            type: object
-            properties:
-              error:
-                type: boolean
-                default: false
-              code:
-                type: string
-                default: ""
-              msg:
-                type: string
-                default: ok
-              data:
-                nullable: true
-                type: object
-                properties:
-                  token:
-                    type: string
-                  ruolo:
-                    type: boolean
-            required:
-              - code
-              - msg
   /confirmed/{shortLink}:
     get:
       description: API per la conferma al click del link
@@ -114,14 +67,63 @@ paths:
                 default: ok
               data:
                 nullable: true
-                enum:
-                  - NoAction
-                  - Notification
-                  - Questionary
-                  - 1
-                  - 2
-                  - 3
-                description: "1 : ADMIN, 2 : Amministratore"
+                type: object
+                properties:
+                  id:
+                    type: number
+                  nome:
+                    type: string
+                  descrizione:
+                    type: string
+                  superUser:
+                    type: boolean
+            required:
+              - code
+              - msg
+  /auth/:
+    post:
+      description: Chiamata per effettuare il login e ricevere il token per effettuare
+        le successive chiamate
+      tags:
+        - Utenti
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $schema: http://json-schema.org/draft-07/schema#
+            type: object
+            additionalProperties: false
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+            required:
+              - username
+              - password
+      responses:
+        "200":
+          description: Default Response
+          schema:
+            type: object
+            properties:
+              error:
+                type: boolean
+                default: false
+              code:
+                type: string
+                default: ""
+              msg:
+                type: string
+                default: ok
+              data:
+                nullable: true
+                type: object
+                properties:
+                  token:
+                    type: string
+                  ruolo:
+                    type: boolean
             required:
               - code
               - msg
@@ -519,7 +521,8 @@ paths:
               - msg
   /sending/getSenderType:
     get:
-      description: API per ricevere i tipi di Sender
+      description: "API per ricevere i tipi di Sender: NoAction, Notification o
+        Questionary "
       tags:
         - Sender
       responses:
@@ -539,11 +542,9 @@ paths:
                 default: ok
               data:
                 nullable: true
-                type: string
-                enum:
-                  - NoAction
-                  - Notification
-                  - Questionary
+                type: array
+                items:
+                  type: string
             required:
               - code
               - msg
@@ -979,6 +980,8 @@ paths:
                           format: date-time
                         strutture:
                           type: array
+                          items:
+                            type: string
                         ruolo:
                           type: object
                           properties:
