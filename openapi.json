@@ -116,244 +116,6 @@ paths:
             required:
               - code
               - msg
-  /structures/:
-    post:
-      description: API per creare una nuova struttura, può essere effettuata solo da
-        un utente ADMIN
-      tags:
-        - Strutture
-      parameters:
-        - name: body
-          in: body
-          schema:
-            $schema: http://json-schema.org/draft-07/schema#
-            type: object
-            additionalProperties: false
-            properties:
-              idStruttura:
-                type: string
-                description: Codice identificativo della struttura
-              name:
-                type: string
-                description: Nome della struttura
-              mail:
-                type: string
-                description: E-mail di riferimento della struttura
-              boolSms:
-                type: boolean
-                description: Campo che indica se la struttura è predisposta ad inviare messaggi
-                  agli utenti
-                default: false
-              boolEmail:
-                type: boolean
-                description: Campo che indica se la struttura è predisposta ad inviare e-mail
-                  agli utenti
-                default: false
-              boolPush:
-                type: boolean
-                description: Campo che indica se la struttura è predisposta ad inviare notifiche
-                  push agli utenti
-                default: false
-              logo:
-                type: string
-                description: Logo della struttura (in base64)
-              colore:
-                type: string
-                description: Colore da associare alla struttura
-            required:
-              - idStruttura
-              - name
-              - mail
-      responses:
-        "201":
-          description: Default Response
-          schema:
-            type: object
-            properties:
-              error:
-                type: boolean
-                default: false
-              code:
-                type: string
-                default: ""
-              msg:
-                type: string
-                default: ok
-              data:
-                nullable: true
-                type: string
-            required:
-              - code
-              - msg
-    get:
-      description: API per ricevere la lista delle strutture inserite nel sistema
-      tags:
-        - Strutture
-      parameters:
-        - type: integer
-          minimum: 0
-          required: false
-          in: query
-          name: offset
-        - type: integer
-          maximum: 100
-          required: false
-          in: query
-          name: limit
-        - type: string
-          maxLength: 50
-          default: ""
-          required: false
-          in: query
-          name: search
-      responses:
-        "200":
-          description: Default Response
-          schema:
-            type: object
-            properties:
-              error:
-                type: boolean
-                default: false
-              code:
-                type: string
-                default: ""
-              msg:
-                type: string
-                default: ok
-              data:
-                nullable: true
-                type: object
-                properties:
-                  totalRecords:
-                    type: integer
-                  records:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: string
-                        nome:
-                          type: string
-                        email:
-                          type: string
-                        logo:
-                          type: string
-                        colore:
-                          type: string
-                        boolSms:
-                          type: boolean
-                        boolEmail:
-                          type: boolean
-                        boolPush:
-                          type: boolean
-            required:
-              - code
-              - msg
-  /structures/delete/{idStructure}:
-    delete:
-      description: API per eliminare una struttura, può essere effettuata solo da un
-        utente ADMIN
-      tags:
-        - Strutture
-      parameters:
-        - type: string
-          required: true
-          in: path
-          name: idStructure
-      responses:
-        "200":
-          description: Default Response
-          schema:
-            type: object
-            properties:
-              error:
-                type: boolean
-                default: false
-              code:
-                type: string
-                default: ""
-              msg:
-                type: string
-                default: ok
-              data:
-                nullable: true
-                type: string
-            required:
-              - code
-              - msg
-  /structures/update/{idStructure}:
-    patch:
-      description: API per aggiornare una struttura, può essere effettuata solo da un
-        utente ADMIN
-      tags:
-        - Strutture
-      parameters:
-        - name: body
-          in: body
-          schema:
-            $schema: http://json-schema.org/draft-07/schema#
-            type: object
-            additionalProperties: false
-            properties:
-              name:
-                type: string
-                minLength: 1
-                description: Nome della struttura
-              mail:
-                type: string
-                minLength: 1
-                description: E-mail di riferimento della struttura
-              boolSms:
-                type: boolean
-                description: Campo che indica se la struttura è predisposta ad inviare messaggi
-                  agli utenti
-                default: false
-              boolEmail:
-                type: boolean
-                description: Campo che indica se la struttura è predisposta ad inviare e-mail
-                  agli utenti
-                default: false
-              boolPush:
-                type: boolean
-                description: Campo che indica se la struttura è predisposta ad inviare notifiche
-                  push agli utenti
-                default: false
-              logo:
-                type: string
-                description: Logo della struttura (in base64)
-              colore:
-                type: string
-                description: Colore da associare alla struttura
-            required:
-              - name
-              - mail
-        - type: string
-          required: true
-          in: path
-          name: idStructure
-      responses:
-        "200":
-          description: Default Response
-          schema:
-            type: object
-            properties:
-              error:
-                type: boolean
-                default: false
-              code:
-                type: string
-                default: ""
-              msg:
-                type: string
-                default: ok
-              data:
-                nullable: true
-                type: string
-            required:
-              - code
-              - msg
   /sending/createRange:
     post:
       description: API per generare un nuovo EVENTO, periodico collegato ad un utente
@@ -373,7 +135,6 @@ paths:
               codiceFiscale:
                 type: string
                 description: Codice Fiscale del paziente a cui è legato l'evento
-                minLength: 16
               nome:
                 type: string
                 description: Nome del paziente a cui è legato l'evento
@@ -775,7 +536,245 @@ paths:
                 nullable: true
                 type: object
                 additionalProperties: true
-                description: "{0:NoAction, 1:Notification, 2:Questionary}"
+                description: "0 : NoAction, 1 : Notification, 2 : Questionary"
+            required:
+              - code
+              - msg
+  /structures/:
+    post:
+      description: API per creare una nuova struttura, può essere effettuata solo da
+        un utente ADMIN
+      tags:
+        - Strutture
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $schema: http://json-schema.org/draft-07/schema#
+            type: object
+            additionalProperties: false
+            properties:
+              idStruttura:
+                type: string
+                description: Codice identificativo della struttura
+              name:
+                type: string
+                description: Nome della struttura
+              mail:
+                type: string
+                description: E-mail di riferimento della struttura
+              boolSms:
+                type: boolean
+                description: Campo che indica se la struttura è predisposta ad inviare messaggi
+                  agli utenti
+                default: false
+              boolEmail:
+                type: boolean
+                description: Campo che indica se la struttura è predisposta ad inviare e-mail
+                  agli utenti
+                default: false
+              boolPush:
+                type: boolean
+                description: Campo che indica se la struttura è predisposta ad inviare notifiche
+                  push agli utenti
+                default: false
+              logo:
+                type: string
+                description: Logo della struttura (in base64)
+              colore:
+                type: string
+                description: Colore da associare alla struttura
+            required:
+              - idStruttura
+              - name
+              - mail
+      responses:
+        "201":
+          description: Default Response
+          schema:
+            type: object
+            properties:
+              error:
+                type: boolean
+                default: false
+              code:
+                type: string
+                default: ""
+              msg:
+                type: string
+                default: ok
+              data:
+                nullable: true
+                type: string
+            required:
+              - code
+              - msg
+    get:
+      description: API per ricevere la lista delle strutture inserite nel sistema
+      tags:
+        - Strutture
+      parameters:
+        - type: integer
+          minimum: 0
+          required: false
+          in: query
+          name: offset
+        - type: integer
+          maximum: 100
+          required: false
+          in: query
+          name: limit
+        - type: string
+          maxLength: 50
+          default: ""
+          required: false
+          in: query
+          name: search
+      responses:
+        "200":
+          description: Default Response
+          schema:
+            type: object
+            properties:
+              error:
+                type: boolean
+                default: false
+              code:
+                type: string
+                default: ""
+              msg:
+                type: string
+                default: ok
+              data:
+                nullable: true
+                type: object
+                properties:
+                  totalRecords:
+                    type: integer
+                  records:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        nome:
+                          type: string
+                        email:
+                          type: string
+                        logo:
+                          type: string
+                        colore:
+                          type: string
+                        boolSms:
+                          type: boolean
+                        boolEmail:
+                          type: boolean
+                        boolPush:
+                          type: boolean
+            required:
+              - code
+              - msg
+  /structures/delete/{idStructure}:
+    delete:
+      description: API per eliminare una struttura, può essere effettuata solo da un
+        utente ADMIN
+      tags:
+        - Strutture
+      parameters:
+        - type: string
+          required: true
+          in: path
+          name: idStructure
+      responses:
+        "200":
+          description: Default Response
+          schema:
+            type: object
+            properties:
+              error:
+                type: boolean
+                default: false
+              code:
+                type: string
+                default: ""
+              msg:
+                type: string
+                default: ok
+              data:
+                nullable: true
+                type: string
+            required:
+              - code
+              - msg
+  /structures/update/{idStructure}:
+    patch:
+      description: API per aggiornare una struttura, può essere effettuata solo da un
+        utente ADMIN
+      tags:
+        - Strutture
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $schema: http://json-schema.org/draft-07/schema#
+            type: object
+            additionalProperties: false
+            properties:
+              name:
+                type: string
+                minLength: 1
+                description: Nome della struttura
+              mail:
+                type: string
+                minLength: 1
+                description: E-mail di riferimento della struttura
+              boolSms:
+                type: boolean
+                description: Campo che indica se la struttura è predisposta ad inviare messaggi
+                  agli utenti
+                default: false
+              boolEmail:
+                type: boolean
+                description: Campo che indica se la struttura è predisposta ad inviare e-mail
+                  agli utenti
+                default: false
+              boolPush:
+                type: boolean
+                description: Campo che indica se la struttura è predisposta ad inviare notifiche
+                  push agli utenti
+                default: false
+              logo:
+                type: string
+                description: Logo della struttura (in base64)
+              colore:
+                type: string
+                description: Colore da associare alla struttura
+            required:
+              - name
+              - mail
+        - type: string
+          required: true
+          in: path
+          name: idStructure
+      responses:
+        "200":
+          description: Default Response
+          schema:
+            type: object
+            properties:
+              error:
+                type: boolean
+                default: false
+              code:
+                type: string
+                default: ""
+              msg:
+                type: string
+                default: ok
+              data:
+                nullable: true
+                type: string
             required:
               - code
               - msg
