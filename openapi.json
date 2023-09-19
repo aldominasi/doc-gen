@@ -4,16 +4,6 @@ info:
   version: 1.0.0
 definitions: {}
 paths:
-  /api/v1/user/:
-    get:
-      responses:
-        "200":
-          description: Default Response
-  //:
-    get:
-      responses:
-        "200":
-          description: Default Response
   /auth/:
     post:
       description: Chiamata per effettuare il login e ricevere il token per effettuare
@@ -126,319 +116,6 @@ paths:
             required:
               - code
               - msg
-  /sending/createRange:
-    post:
-      description: API per generare un nuovo EVENTO, periodico collegato ad un utente
-        ed una struttura
-      tags:
-        - Sender
-      parameters:
-        - name: body
-          in: body
-          schema:
-            $schema: http://json-schema.org/draft-07/schema#
-            type: object
-            properties:
-              struttura:
-                type: string
-                description: Il codice della struttura a cui è legato l'evento
-              codiceFiscale:
-                type: string
-                description: Codice Fiscale del paziente a cui è legato l'evento
-                minLength: 16
-              nome:
-                type: string
-                description: Nome del paziente a cui è legato l'evento
-              cognome:
-                type: string
-                description: Cognome del paziente a cui è legato l'evento
-              telefono:
-                type: string
-                description: Numero di telefono del paziente a cui è legato l'evento
-              email:
-                type: string
-                description: E-mail del paziente a cui è legato l'evento
-              actionType:
-                enum:
-                  - NoAction
-                  - Notification
-                  - Questionary
-                  - "1"
-                  - "2"
-                  - "3"
-              descrizione:
-                type: string
-                description: Descrizione dell'evento
-              idPrescrizione:
-                type: string
-              dataInizio:
-                type: string
-                description: Giorno da cui deve partire lo scheduling
-              giorniTotali:
-                type: number
-                description: Numero di giorni in cui mandare notifiche
-              range:
-                type: number
-                description: Intervallo di giorni che deve trascorrere tra due notifiche
-                  consecutive
-              orari:
-                type: array
-                items:
-                  type: string
-                description: Array degli orari a cui mandare le notifiche
-              boolEmail:
-                type: boolean
-                description: Campo che indica se l'e-mail è uno dei metodi d'invio
-                default: false
-              emailMessage:
-                type: string
-                description: Messaggio da mandare nell'e-mail
-              emailSubject:
-                type: string
-                description: Oggetto dell'e-mail
-              emailAttachments:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    fileName:
-                      type: string
-                    data:
-                      type: string
-                    fileType:
-                      type: string
-                      enum:
-                        - pdf
-                        - json
-                description: Eventuali allegati dell'e-mail
-              boolSms:
-                type: boolean
-                description: Campo che indica se l'SMS è uno dei metodi d'invio
-                default: false
-              smsMessage:
-                type: string
-                description: Messaggio da mandare nell'SMS
-              delayBeforeNotification:
-                type: number
-                default: 0
-                description: Tempo dopo il quale mandare una notifica dopo la mancata ricezione
-              callbackInvio:
-                type: string
-                description: Eventuale indirizzo a cui mandare una notifica oppure ciò che viene
-                  inserito nel campo responseInvio all'atto dell'invio della
-                  notifica
-              responseInvio:
-                type: object
-                additionalProperties: true
-                description: Corpo del messaggio inviato al callbackInvio
-              callbackClick:
-                type: string
-                description: Eventuale indirizzo a cui mandare una notifica oppure ciò che viene
-                  inserito nel campo responseClick all'atto del click al link da
-                  parte del paziente
-              responseClick:
-                type: object
-                additionalProperties: true
-                description: Corpo del messaggio inviato al callbackClick
-              callbackEliminazione:
-                type: string
-                description: Eventuale indirizzo a cui mandare una notifica oppure ciò che viene
-                  inserito nel campo responseClick all'atto dell'eliminazione
-                  del sender
-              responseEliminazione:
-                type: object
-                additionalProperties: true
-                description: Corpo del messaggio inviato al callbackEliminazione
-            required:
-              - struttura
-              - codiceFiscale
-              - dataInizio
-              - giorniTotali
-              - orari
-        - in: header
-          name: authorization
-          required: false
-          type: string
-      responses:
-        "200":
-          description: Default Response
-          schema:
-            type: object
-            properties:
-              error:
-                type: boolean
-                default: false
-              code:
-                type: string
-                default: ""
-              msg:
-                type: string
-                default: ok
-              data:
-                nullable: true
-                type: string
-            required:
-              - code
-              - msg
-  /sending/delete/{idSender}:
-    delete:
-      description: API per eliminare un sender
-      tags:
-        - Sender
-      parameters:
-        - type: string
-          required: true
-          in: path
-          name: idSender
-      responses:
-        "200":
-          description: Default Response
-          schema:
-            type: object
-            properties:
-              error:
-                type: boolean
-                default: false
-              code:
-                type: string
-                default: ""
-              msg:
-                type: string
-                default: ok
-              data:
-                nullable: true
-                type: string
-            required:
-              - code
-              - msg
-  /sending/:
-    get:
-      description: API per ricevere gli eventi in un range di date, INFORMAZIONI SUL
-        FORMATO DATA?
-      tags:
-        - Sender
-      parameters:
-        - type: string
-          required: false
-          in: query
-          name: codiceFiscale
-        - type: string
-          required: false
-          in: query
-          name: dataInizio
-        - type: string
-          required: false
-          in: query
-          name: dataFine
-        - type: integer
-          minimum: 0
-          default: 0
-          required: false
-          in: query
-          name: offset
-        - type: integer
-          minimum: 1
-          default: 100
-          required: false
-          in: query
-          name: limit
-        - in: header
-          name: authorization
-          required: true
-          type: string
-        - in: header
-          name: idStruttura
-          required: false
-          type: string
-      responses:
-        "200":
-          description: Default Response
-          schema:
-            type: object
-            properties:
-              error:
-                type: boolean
-                default: false
-              code:
-                type: string
-                default: ""
-              msg:
-                type: string
-                default: ok
-              data:
-                nullable: true
-                type: object
-                additionalProperties: true
-            required:
-              - code
-              - msg
-  /sending/timeSlot:
-    get:
-      description: API per ricevere gli slotOrari selezionabili
-      tags:
-        - Sender
-      parameters:
-        - in: header
-          name: authorization
-          required: true
-          type: string
-      responses:
-        "200":
-          description: Default Response
-          schema:
-            type: object
-            properties:
-              error:
-                type: boolean
-                default: false
-              code:
-                type: string
-                default: ""
-              msg:
-                type: string
-                default: ok
-              data:
-                nullable: true
-                type: array
-                items:
-                  type: object
-                  properties:
-                    value:
-                      type: string
-                    label:
-                      type: string
-                    disabled:
-                      type: boolean
-            required:
-              - code
-              - msg
-  /sending/getSenderType:
-    get:
-      description: API per ricevere i tipi di Sender
-      tags:
-        - Sender
-      responses:
-        "200":
-          description: Default Response
-          schema:
-            type: object
-            properties:
-              error:
-                type: boolean
-                default: false
-              code:
-                type: string
-                default: ""
-              msg:
-                type: string
-                default: ok
-              data:
-                nullable: true
-                type: object
-                additionalProperties: true
-            required:
-              - code
-              - msg
   /structures/:
     post:
       description: API per creare una nuova struttura, può essere effettuata solo da
@@ -509,7 +186,7 @@ paths:
               - code
               - msg
     get:
-      description: API per ricevere la lista delle strutture
+      description: API per ricevere la lista delle strutture inserite nel sistema
       tags:
         - Strutture
       parameters:
@@ -623,19 +300,35 @@ paths:
               name:
                 type: string
                 minLength: 1
+                description: Nome della struttura
               mail:
                 type: string
                 minLength: 1
+                description: E-mail di riferimento della struttura
               boolSms:
                 type: boolean
+                description: Campo che indica se la struttura è predisposta ad inviare messaggi
+                  agli utenti
+                default: false
               boolEmail:
                 type: boolean
+                description: Campo che indica se la struttura è predisposta ad inviare e-mail
+                  agli utenti
+                default: false
               boolPush:
                 type: boolean
+                description: Campo che indica se la struttura è predisposta ad inviare notifiche
+                  push agli utenti
+                default: false
               logo:
                 type: string
+                description: Logo della struttura (in base64)
               colore:
                 type: string
+                description: Colore da associare alla struttura
+            required:
+              - name
+              - mail
         - type: string
           required: true
           in: path
@@ -658,6 +351,431 @@ paths:
               data:
                 nullable: true
                 type: string
+            required:
+              - code
+              - msg
+  /sending/createRange:
+    post:
+      description: API per generare un nuovo EVENTO, periodico collegato ad un utente
+        ed una struttura
+      tags:
+        - Sender
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $schema: http://json-schema.org/draft-07/schema#
+            type: object
+            properties:
+              struttura:
+                type: string
+                description: Il codice della struttura a cui è legato l'evento
+              codiceFiscale:
+                type: string
+                description: Codice Fiscale del paziente a cui è legato l'evento
+                minLength: 16
+              nome:
+                type: string
+                description: Nome del paziente a cui è legato l'evento
+              cognome:
+                type: string
+                description: Cognome del paziente a cui è legato l'evento
+              telefono:
+                type: string
+                description: Numero di telefono del paziente a cui è legato l'evento
+              email:
+                type: string
+                description: E-mail del paziente a cui è legato l'evento
+              actionType:
+                enum:
+                  - NoAction
+                  - Notification
+                  - Questionary
+                  - "1"
+                  - "2"
+                  - "3"
+              descrizione:
+                type: string
+                description: Descrizione dell'evento
+              idPrescrizione:
+                type: string
+                description: Campo opzionale
+              dataInizio:
+                type: string
+                description: Giorno da cui deve partire lo scheduling
+              giorniTotali:
+                type: number
+                description: Numero di giorni in cui mandare notifiche
+              range:
+                type: number
+                description: Intervallo di giorni che deve trascorrere tra due notifiche
+                  consecutive
+              orari:
+                type: array
+                items:
+                  type: string
+                description: Array degli orari a cui mandare le notifiche
+              boolEmail:
+                type: boolean
+                description: Campo che indica se l'e-mail è uno dei metodi d'invio
+                default: false
+              emailMessage:
+                type: string
+                description: Messaggio da mandare nell'e-mail
+              emailSubject:
+                type: string
+                description: Oggetto dell'e-mail
+              emailAttachments:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    fileName:
+                      type: string
+                    data:
+                      type: string
+                    fileType:
+                      type: string
+                      enum:
+                        - pdf
+                description: Array degli eventuali allegati dell'e-mail (in pdf)
+              boolSms:
+                type: boolean
+                description: Campo che indica se l'SMS è uno dei metodi d'invio
+                default: false
+              smsMessage:
+                type: string
+                description: Messaggio da mandare nell'SMS
+              delayBeforeNotification:
+                type: number
+                default: 0
+                description: Tempo dopo il quale mandare una notifica dopo la mancata ricezione
+              callbackInvio:
+                type: string
+                description: Eventuale indirizzo a cui mandare una notifica oppure ciò che viene
+                  inserito nel campo responseInvio all'atto dell'invio della
+                  notifica
+              responseInvio:
+                type: object
+                additionalProperties: true
+                description: Corpo del messaggio inviato al callbackInvio
+              callbackClick:
+                type: string
+                description: Eventuale indirizzo a cui mandare una notifica oppure ciò che viene
+                  inserito nel campo responseClick all'atto del click al link da
+                  parte del paziente
+              responseClick:
+                type: object
+                additionalProperties: true
+                description: Corpo del messaggio inviato al callbackClick
+              callbackEliminazione:
+                type: string
+                description: Eventuale indirizzo a cui mandare una notifica oppure ciò che viene
+                  inserito nel campo responseClick all'atto dell'eliminazione
+                  del sender
+              responseEliminazione:
+                type: object
+                additionalProperties: true
+                description: Corpo del messaggio inviato al callbackEliminazione
+            required:
+              - struttura
+              - codiceFiscale
+              - dataInizio
+              - giorniTotali
+              - orari
+        - in: header
+          name: authorization
+          required: false
+          type: string
+      responses:
+        "200":
+          description: Default Response
+          schema:
+            type: object
+            properties:
+              error:
+                type: boolean
+                default: false
+              code:
+                type: string
+                default: ""
+              msg:
+                type: string
+                default: ok
+              data:
+                nullable: true
+                type: string
+            required:
+              - code
+              - msg
+  /sending/delete/{idSender}:
+    delete:
+      description: API per eliminare un sender
+      tags:
+        - Sender
+      parameters:
+        - type: string
+          required: true
+          in: path
+          name: idSender
+      responses:
+        "200":
+          description: Default Response
+          schema:
+            type: object
+            properties:
+              error:
+                type: boolean
+                default: false
+              code:
+                type: string
+                default: ""
+              msg:
+                type: string
+                default: ok
+              data:
+                nullable: true
+                type: string
+            required:
+              - code
+              - msg
+  /sending/:
+    get:
+      description: API per ricevere gli eventi in un determinato intervallo di date
+      tags:
+        - Sender
+      parameters:
+        - type: string
+          required: false
+          in: query
+          name: codiceFiscale
+        - type: string
+          required: false
+          in: query
+          name: dataInizio
+        - type: string
+          required: false
+          in: query
+          name: dataFine
+        - type: integer
+          minimum: 0
+          default: 0
+          required: false
+          in: query
+          name: offset
+        - type: integer
+          minimum: 1
+          default: 100
+          required: false
+          in: query
+          name: limit
+        - in: header
+          name: authorization
+          required: true
+          type: string
+        - in: header
+          name: idStruttura
+          required: false
+          type: string
+      responses:
+        "200":
+          description: Default Response
+          schema:
+            type: object
+            properties:
+              error:
+                type: boolean
+                default: false
+              code:
+                type: string
+                default: ""
+              msg:
+                type: string
+                default: ok
+              data:
+                nullable: true
+                type: object
+                properties:
+                  totalRecords:
+                    type: integer
+                  records:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        struttura:
+                          type: string
+                          description: Il codice della struttura a cui è legato l'evento
+                        codiceFiscale:
+                          type: string
+                          description: Codice Fiscale del paziente a cui è legato l'evento
+                        nome:
+                          type: string
+                          description: Nome del paziente a cui è legato l'evento
+                        cognome:
+                          type: string
+                          description: Cognome del paziente a cui è legato l'evento
+                        telefono:
+                          type: string
+                          description: Numero di telefono del paziente a cui è legato l'evento
+                        email:
+                          type: string
+                          description: E-mail del paziente a cui è legato l'evento
+                        actionType:
+                          enum:
+                            - NoAction
+                            - Notification
+                            - Questionary
+                            - "1"
+                            - "2"
+                            - "3"
+                        descrizione:
+                          type: string
+                          description: Descrizione dell'evento
+                        idPrescrizione:
+                          type: string
+                          description: Campo opzionale
+                        dataInizio:
+                          type: string
+                          description: Giorno da cui deve partire lo scheduling
+                        giorniTotali:
+                          type: number
+                          description: Numero di giorni in cui mandare notifiche
+                        range:
+                          type: number
+                          description: Intervallo di giorni che deve trascorrere tra due notifiche
+                            consecutive
+                        orari:
+                          type: array
+                          items:
+                            type: string
+                          description: Array degli orari a cui mandare le notifiche
+                        boolEmail:
+                          type: boolean
+                          description: Campo che indica se l'e-mail è uno dei metodi d'invio
+                        emailMessage:
+                          type: string
+                          description: Messaggio da mandare nell'e-mail
+                        emailSubject:
+                          type: string
+                          description: Oggetto dell'e-mail
+                        emailAttachments:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              fileName:
+                                type: string
+                              data:
+                                type: string
+                              fileType:
+                                type: string
+                                enum:
+                                  - pdf
+                          description: Array degli eventuali allegati dell'e-mail (in pdf)
+                        boolSms:
+                          type: boolean
+                          description: Campo che indica se l'SMS è uno dei metodi d'invio
+                          default: false
+                        smsMessage:
+                          type: string
+                          description: Messaggio da mandare nell'SMS
+                        delayBeforeNotification:
+                          type: number
+                          default: 0
+                          description: Tempo dopo il quale mandare una notifica dopo la mancata ricezione
+                        callbackInvio:
+                          type: string
+                          description: Eventuale indirizzo a cui mandare una notifica oppure ciò che viene
+                            inserito nel campo responseInvio all'atto dell'invio
+                            della notifica
+                        responseInvio:
+                          type: object
+                          description: Corpo del messaggio inviato al callbackInvio
+                        callbackClick:
+                          type: string
+                          description: Eventuale indirizzo a cui mandare una notifica oppure ciò che viene
+                            inserito nel campo responseClick all'atto del click
+                            al link da parte del paziente
+                        responseClick:
+                          type: object
+                          description: Corpo del messaggio inviato al callbackClick
+                        callbackEliminazione:
+                          type: string
+                          description: Eventuale indirizzo a cui mandare una notifica oppure ciò che viene
+                            inserito nel campo responseClick all'atto
+                            dell'eliminazione del sender
+                        responseEliminazione:
+                          type: object
+                          description: Corpo del messaggio inviato al callbackEliminazione
+            required:
+              - code
+              - msg
+  /sending/timeSlot:
+    get:
+      description: API per ricevere gli slotOrari selezionabili (ogni 15 minuti)
+      tags:
+        - Sender
+      parameters:
+        - in: header
+          name: authorization
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Default Response
+          schema:
+            type: object
+            properties:
+              error:
+                type: boolean
+                default: false
+              code:
+                type: string
+                default: ""
+              msg:
+                type: string
+                default: ok
+              data:
+                nullable: true
+                type: array
+                items:
+                  type: object
+                  properties:
+                    value:
+                      type: string
+                    label:
+                      type: string
+                    disabled:
+                      type: boolean
+            required:
+              - code
+              - msg
+  /sending/getSenderType:
+    get:
+      description: API per ricevere i tipi di Sender
+      tags:
+        - Sender
+      responses:
+        "200":
+          description: Default Response
+          schema:
+            type: object
+            properties:
+              error:
+                type: boolean
+                default: false
+              code:
+                type: string
+                default: ""
+              msg:
+                type: string
+                default: ok
+              data:
+                nullable: true
+                type: object
+                additionalProperties: true
+                description: "{0:NoAction, 1:Notification, 2:Questionary}"
             required:
               - code
               - msg
