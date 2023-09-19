@@ -4,6 +4,53 @@ info:
   version: 1.0.0
 definitions: {}
 paths:
+  /auth/:
+    post:
+      description: Chiamata per effettuare il login e ricevere il token per effettuare
+        le successive chiamate
+      tags:
+        - Utenti
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $schema: http://json-schema.org/draft-07/schema#
+            type: object
+            additionalProperties: false
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+            required:
+              - username
+              - password
+      responses:
+        "200":
+          description: Default Response
+          schema:
+            type: object
+            properties:
+              error:
+                type: boolean
+                default: false
+              code:
+                type: string
+                default: ""
+              msg:
+                type: string
+                default: ok
+              data:
+                nullable: true
+                type: object
+                properties:
+                  token:
+                    type: string
+                  ruolo:
+                    type: boolean
+            required:
+              - code
+              - msg
   /confirmed/{shortLink}:
     get:
       description: API per la conferma al click del link
@@ -67,63 +114,18 @@ paths:
                 default: ok
               data:
                 nullable: true
-                type: object
-                properties:
-                  id:
-                    type: number
-                  nome:
-                    type: string
-                  descrizione:
-                    type: string
-                  superUser:
-                    type: boolean
-            required:
-              - code
-              - msg
-  /auth/:
-    post:
-      description: Chiamata per effettuare il login e ricevere il token per effettuare
-        le successive chiamate
-      tags:
-        - Utenti
-      parameters:
-        - name: body
-          in: body
-          schema:
-            $schema: http://json-schema.org/draft-07/schema#
-            type: object
-            additionalProperties: false
-            properties:
-              username:
-                type: string
-              password:
-                type: string
-            required:
-              - username
-              - password
-      responses:
-        "200":
-          description: Default Response
-          schema:
-            type: object
-            properties:
-              error:
-                type: boolean
-                default: false
-              code:
-                type: string
-                default: ""
-              msg:
-                type: string
-                default: ok
-              data:
-                nullable: true
-                type: object
-                properties:
-                  token:
-                    type: string
-                  ruolo:
-                    type: boolean
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: number
+                    nome:
+                      type: string
+                    descrizione:
+                      type: string
+                    superUser:
+                      type: boolean
             required:
               - code
               - msg
@@ -365,117 +367,7 @@ paths:
               data:
                 nullable: true
                 type: object
-                properties:
-                  totalRecords:
-                    type: integer
-                  records:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        struttura:
-                          type: string
-                          description: Il codice della struttura a cui è legato l'evento
-                        codiceFiscale:
-                          type: string
-                          description: Codice Fiscale del paziente a cui è legato l'evento
-                        nome:
-                          type: string
-                          description: Nome del paziente a cui è legato l'evento
-                        cognome:
-                          type: string
-                          description: Cognome del paziente a cui è legato l'evento
-                        telefono:
-                          type: string
-                          description: Numero di telefono del paziente a cui è legato l'evento
-                        email:
-                          type: string
-                          description: E-mail del paziente a cui è legato l'evento
-                        actionType:
-                          type: string
-                          enum:
-                            - NoAction
-                            - Notification
-                            - Questionary
-                        descrizione:
-                          type: string
-                          description: Descrizione dell'evento
-                        idPrescrizione:
-                          type: string
-                          description: Campo opzionale
-                        dataInizio:
-                          type: string
-                          description: Giorno da cui deve partire lo scheduling
-                        giorniTotali:
-                          type: number
-                          description: Numero di giorni in cui mandare notifiche
-                        range:
-                          type: number
-                          description: Intervallo di giorni che deve trascorrere tra due notifiche
-                            consecutive
-                        orari:
-                          type: array
-                          items:
-                            type: string
-                          description: Array degli orari a cui mandare le notifiche
-                        boolEmail:
-                          type: boolean
-                          description: Campo che indica se l'e-mail è uno dei metodi d'invio
-                        emailMessage:
-                          type: string
-                          description: Messaggio da mandare nell'e-mail
-                        emailSubject:
-                          type: string
-                          description: Oggetto dell'e-mail
-                        emailAttachments:
-                          type: array
-                          items:
-                            type: object
-                            properties:
-                              fileName:
-                                type: string
-                              data:
-                                type: string
-                              fileType:
-                                type: string
-                                enum:
-                                  - pdf
-                          description: Array degli eventuali allegati dell'e-mail (in pdf)
-                        boolSms:
-                          type: boolean
-                          description: Campo che indica se l'SMS è uno dei metodi d'invio
-                          default: false
-                        smsMessage:
-                          type: string
-                          description: Messaggio da mandare nell'SMS
-                        delayBeforeNotification:
-                          type: number
-                          default: 0
-                          description: Tempo dopo il quale mandare una notifica dopo la mancata ricezione
-                        callbackInvio:
-                          type: string
-                          description: Eventuale indirizzo a cui mandare una notifica oppure ciò che viene
-                            inserito nel campo responseInvio all'atto dell'invio
-                            della notifica
-                        responseInvio:
-                          type: object
-                          description: Corpo del messaggio inviato al callbackInvio
-                        callbackClick:
-                          type: string
-                          description: Eventuale indirizzo a cui mandare una notifica oppure ciò che viene
-                            inserito nel campo responseClick all'atto del click
-                            al link da parte del paziente
-                        responseClick:
-                          type: object
-                          description: Corpo del messaggio inviato al callbackClick
-                        callbackEliminazione:
-                          type: string
-                          description: Eventuale indirizzo a cui mandare una notifica oppure ciò che viene
-                            inserito nel campo responseClick all'atto
-                            dell'eliminazione del sender
-                        responseEliminazione:
-                          type: object
-                          description: Corpo del messaggio inviato al callbackEliminazione
+                additionalProperties: true
             required:
               - code
               - msg
@@ -981,7 +873,24 @@ paths:
                         strutture:
                           type: array
                           items:
-                            type: string
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              nome:
+                                type: string
+                              email:
+                                type: string
+                              logo:
+                                type: string
+                              colore:
+                                type: string
+                              boolSms:
+                                type: boolean
+                              boolEmail:
+                                type: boolean
+                              boolPush:
+                                type: boolean
                         ruolo:
                           type: object
                           properties:
@@ -1095,4 +1004,4 @@ tags:
   - name: Link di conferma
     description: Link di conferma
   - name: Ruoli
-    description: Gestione degli utenti
+    description: Gestione dei ruoli
