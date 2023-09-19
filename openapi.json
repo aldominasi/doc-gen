@@ -86,7 +86,10 @@ paths:
               - msg
   /roles/:
     get:
-      description: API per ottenere la lista dei ruoli assegnabili agli utenti
+      description: API per ottenere la lista dei ruoli assegnabili agli utenti. I
+        ruoli disponibili sono "ADMIN" (utente con tutti i privilegi) e
+        "Amministratore" (che dispone dei permessi per creare gli eventi per una
+        o più strutture)
       tags:
         - Ruoli
       parameters:
@@ -111,8 +114,14 @@ paths:
                 default: ok
               data:
                 nullable: true
-                type: object
-                additionalProperties: true
+                enum:
+                  - NoAction
+                  - Notification
+                  - Questionary
+                  - 1
+                  - 2
+                  - 3
+                description: "1 : ADMIN, 2 : Amministratore"
             required:
               - code
               - msg
@@ -148,13 +157,11 @@ paths:
                 type: string
                 description: E-mail del paziente a cui è legato l'evento
               actionType:
+                type: string
                 enum:
                   - NoAction
                   - Notification
                   - Questionary
-                  - "1"
-                  - "2"
-                  - "3"
               descrizione:
                 type: string
                 description: Descrizione dell'evento
@@ -383,13 +390,11 @@ paths:
                           type: string
                           description: E-mail del paziente a cui è legato l'evento
                         actionType:
+                          type: string
                           enum:
                             - NoAction
                             - Notification
                             - Questionary
-                            - "1"
-                            - "2"
-                            - "3"
                         descrizione:
                           type: string
                           description: Descrizione dell'evento
@@ -534,9 +539,11 @@ paths:
                 default: ok
               data:
                 nullable: true
-                type: object
-                additionalProperties: true
-                description: "0 : NoAction, 1 : Notification, 2 : Questionary"
+                type: string
+                enum:
+                  - NoAction
+                  - Notification
+                  - Questionary
             required:
               - code
               - msg
