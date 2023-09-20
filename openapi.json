@@ -86,8 +86,7 @@ paths:
               - msg
   /roles/:
     get:
-      description: API per ottenere la lista dei ruoli assegnabili agli utenti. I
-        ruoli disponibili sono "ADMIN" (utente con tutti i privilegi) e
+      description: I ruoli disponibili sono "ADMIN" (utente con tutti i privilegi) e
         "Amministratore" (che dispone dei permessi per creare gli eventi per una
         o più strutture)
       tags:
@@ -166,6 +165,9 @@ paths:
                   - NoAction
                   - Notification
                   - Questionary
+                description: "Tipo di azione che si vuole ottenere dall'utente (NoAction:
+                  nessuna, Notification: si invia un link per la conferma di
+                  ricezione"
               descrizione:
                 type: string
                 description: Descrizione dell'evento
@@ -222,6 +224,7 @@ paths:
                 type: number
                 default: 0
                 description: Tempo dopo il quale mandare una notifica dopo la mancata ricezione
+                  (ancora non implementato
               callbackInvio:
                 type: string
                 description: Eventuale indirizzo a cui mandare una notifica oppure ciò che viene
@@ -254,6 +257,7 @@ paths:
               - codiceFiscale
               - dataInizio
               - giorniTotali
+              - range
               - orari
         - in: header
           name: authorization
@@ -318,26 +322,32 @@ paths:
         - Sender
       parameters:
         - type: string
+          description: CF del paziente a cui è associato il sender
           required: false
           in: query
           name: codiceFiscale
         - type: string
+          description: Data iniziale da includere nella ricerca
           required: false
           in: query
           name: dataInizio
         - type: string
+          description: Data finale da includere nella ricerca
           required: false
           in: query
           name: dataFine
         - type: integer
           minimum: 0
           default: 0
+          description: Offset e limit insieme servono per ricevere un certo numero di
+            sender per ogni chiamata
           required: false
           in: query
           name: offset
         - type: integer
           minimum: 1
           default: 100
+          description: Numero massimo di sender che si vuole ricevere
           required: false
           in: query
           name: limit
@@ -370,6 +380,7 @@ paths:
                 properties:
                   totalRecords:
                     type: integer
+                    description: Numero di sender inviati
                   records:
                     type: array
                     items:
@@ -575,15 +586,14 @@ paths:
                           description: Corpo del messaggio inviato al callbackEliminazione
                         eliminato:
                           type: boolean
+                          description: Booleano che indica se il sender è stato eliminato
                         dataEliminazione:
                           type: string
-                          format: date-time
+                          description: Data in cui è stato eliminato il sender
                         createdAt:
                           type: string
-                          format: date-time
                         updatedAt:
                           type: string
-                          format: date-time
             required:
               - code
               - msg
@@ -774,20 +784,31 @@ paths:
                       properties:
                         id:
                           type: string
+                          description: Codice identificativo della struttura
                         nome:
                           type: string
+                          description: Nome della struttura
                         email:
                           type: string
+                          description: E-mail di riferimento della struttura
                         logo:
                           type: string
+                          description: Logo della struttura (in base64)
                         colore:
                           type: string
+                          description: Colore da associare alla struttura
                         boolSms:
                           type: boolean
+                          description: Campo che indica se la struttura è predisposta ad inviare messaggi
+                            agli utenti
                         boolEmail:
                           type: boolean
+                          description: Campo che indica se la struttura è predisposta ad inviare e-mail
+                            agli utenti
                         boolPush:
                           type: boolean
+                          description: Campo che indica se la struttura è predisposta ad inviare notifiche
+                            push agli utenti
             required:
               - code
               - msg
@@ -1003,7 +1024,7 @@ paths:
                 description: Array delle strutture associate all'utente
               ruolo:
                 type: number
-                description: Ruolo dell'utente, 1 per permessi amministratore, 2 altrimenti
+                description: "Ruolo dell'utente: 1 per permessi amministratore, 2 altrimenti"
             required:
               - username
               - password
@@ -1082,10 +1103,8 @@ paths:
                           type: boolean
                         createdAt:
                           type: string
-                          format: date-time
                         updatedAt:
                           type: string
-                          format: date-time
                         strutture:
                           type: array
                           items:
@@ -1120,10 +1139,8 @@ paths:
                               type: boolean
                             createdAt:
                               type: string
-                              format: date-time
                             updatedAt:
                               type: string
-                              format: date-time
             required:
               - code
               - msg
