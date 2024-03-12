@@ -9,7 +9,7 @@ components:
   schemas: {}
 paths:
   /api/:
-    get:
+    post:
       responses:
         "200":
           description: Default Response
@@ -23,7 +23,7 @@ paths:
             type: string
           in: query
           name: periodo
-          required: true
+          required: false
           description: "Periodo di riferimento in formato YYYYMM; es: 202311"
         - schema:
             type: string
@@ -32,6 +32,42 @@ paths:
           required: false
           description: Branca di cui si vuogliono visualizzare i dati (se non presente
             verranno inviate tutte le branche)
+        - schema:
+            type: string
+          in: query
+          name: anno
+          required: false
+          description: Anno di riferimento (da inserire solo per l'estrazione dell'anno
+            completo)
+      responses:
+        "200":
+          description: Default Response
+  /api/budget/list:
+    get:
+      summary: Api per recuperare i budget
+      tags:
+        - Budget
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: periodo
+          required: false
+          description: "Periodo di riferimento in formato YYYYMM; es: 202311"
+        - schema:
+            type: string
+          in: query
+          name: branca
+          required: false
+          description: Branca di cui si vuogliono visualizzare i dati (se non presente
+            verranno inviate tutte le branche)
+        - schema:
+            type: string
+          in: query
+          name: anno
+          required: false
+          description: Anno di riferimento (da inserire solo per l'estrazione dell'anno
+            completo)
       responses:
         "200":
           description: Default Response
@@ -55,6 +91,347 @@ paths:
               required:
                 - nre
                 - branca
+        required: true
+      responses:
+        "200":
+          description: Default Response
+  /api/v4/process-apis/booking-management/bookings/notification:
+    post:
+      tags:
+        - Incoming V4
+      responses:
+        "200":
+          description: Default Response
+  /api/v4/process-apis/booking-management/pre-bookings/notification:
+    post:
+      tags:
+        - Incoming V4
+      responses:
+        "200":
+          description: Default Response
+  "/api/v4/process-apis/booking-management/bookings/{bookingCode}":
+    delete:
+      tags:
+        - Incoming V4
+      parameters:
+        - schema:
+            type: string
+            minLength: 1
+          in: path
+          name: bookingCode
+          required: true
+      responses:
+        "200":
+          description: Default Response
+  /api/v4/process-apis/booking-management/bookings:
+    post:
+      tags:
+        - Incoming V4
+      responses:
+        "200":
+          description: Default Response
+  /api/v4/admission:
+    post:
+      summary: Notifica di accettazione
+      tags:
+        - Outgoing V4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                admissionTypeId:
+                  type: string
+                  description: Id tipologia di accettazione
+                details:
+                  type: array
+                  description: Elenco dettagli prestazioni
+                  items:
+                    type: object
+                    properties:
+                      bookingCode:
+                        type: string
+                        description: Eventuale codice della prenotazione
+                      executionDatetime:
+                        type: string
+                        description: Data/ora erogazione della prestazione in formato Unix epoch
+                      scheduledDatetime:
+                        type: string
+                        description: Data/ora di presunta erogazione in formato Unix epoch
+                      bookingDate:
+                        type: string
+                      phoneNumber:
+                        type: string
+                        description: Numero di telefono paziente per eventuali comunicazioni,
+                          obbligatorio se assente reasonDenyPhoneNumber
+                      quantity:
+                        type: number
+                        description: Quantita'
+                      reasonDenyPhoneNumber:
+                        type: string
+                        description: Motivazione indisponibilità numero di telefono
+                      serviceCode:
+                        type: string
+                        description: Codice prestazione
+                      specializationCode:
+                        type: string
+                        description: Branca della prestazione
+                    required:
+                      - executionDatetime
+                      - scheduledDatetime
+                      - serviceCode
+                directEntry:
+                  type: boolean
+                  description: Flag per indicare se accesso diretto
+                executionUnitId:
+                  type: string
+                  description: Identificativo di sistema dell'unità erogante
+                personIdentifier:
+                  type: string
+                  description: "Codice Identificativo della persona: CF, ENI o STP"
+                prescription:
+                  type: object
+                  description: Informazioni relative alla ricetta
+                  properties:
+                    compilationDatetime:
+                      type: number
+                      description: Data compilazione ricetta in formato Unix epoch
+                    diagnosisCode:
+                      type: string
+                      description: Codice dell'eventuale diagnosi
+                    doctorIdentifier:
+                      type: string
+                      description: Codice fiscale medico che ha emesso la ricetta
+                    doctorType:
+                      type: string
+                      description: Tipologia del medico
+                    exemptionCode:
+                      type: string
+                      description: Identificativo ministeriale dell'eventuale esenzione
+                    nreAccessType:
+                      type: string
+                      enum:
+                        - ACCESSO_SUCCESSIVO
+                        - PRIMO_ACCESSO
+                      description: Tipo di accesso
+                    prescriptionNumber:
+                      type: string
+                      description: Numero ricetta
+                    priorityClass:
+                      type: string
+                      enum:
+                        - B
+                        - D
+                        - P
+                        - U
+                      description: Classe di priorita' della ricetta
+                  required:
+                    - compilationDatetime
+                    - doctorType
+                    - priorityClass
+                prescriptionNRE:
+                  type: string
+                  description: Numero di ricetta elettronica, obbligatorio se assente l'oggetto
+                    prescription
+                site:
+                  type: object
+                  description: Informazioni della sede
+                  properties:
+                    identifiedBy:
+                      type: string
+                      description: Campo per indicare tipologia di indentificazione della sede
+                    identifier:
+                      type: string
+                      description: Codice identificativo della sede
+                  required:
+                    - identifiedBy
+                    - identifier
+                supplyModeCategoryId:
+                  type: string
+                  description: Id categoria regime di erogazione.
+                branca:
+                  type: string
+                  description: Branca di riferimento dell'NRE
+              required:
+                - admissionTypeId
+                - details
+                - personIdentifier
+                - site
+                - supplyModeCategoryId
+        required: true
+      responses:
+        "200":
+          description: Default Response
+    patch:
+      summary: Modifica lo stato dell'accettazione
+      tags:
+        - Outgoing V4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  admissionIdentification:
+                    type: object
+                    description: Rappresenta il tipo di codice identificativo e lo stesso codice
+                      utilizzati per identificare un'accettazione.
+                    properties:
+                      identifiedBy:
+                        type: string
+                        enum:
+                          - CODICE_ACCETTAZIONE
+                          - NUMERO_RICETTA
+                        description: Tipo di codice con cui identificare l'accettazione.
+                      identifier:
+                        type: string
+                        description: Identificativo dell'accettazione. Varia in base al tipo di
+                          identificativo scelto nel campo identifiedBy
+                    required:
+                      - identifiedBy
+                      - identifier
+                  admissionStatus:
+                    type: string
+                    enum:
+                      - DA_EROGARE
+                      - ELIMINATA
+                      - EROGATA
+                      - NON_EROGATA
+                      - PRESCRITTA
+                    description: Nuovo stato da assegnare all'accettazione.
+                  reasonId:
+                    type: integer
+                    description: Identificativo motivazione del cambio di stato. Necessaria solo nel
+                      caso di stato NON_EROGATA.
+                  branca:
+                    type: string
+                    description: Branca di riferimento dell'NRE
+                required:
+                  - admissionStatus
+      responses:
+        "200":
+          description: Default Response
+  /api/v4/spoke/admission:
+    post:
+      summary: Notifica di accettazione diretta per gli Spoke
+      tags:
+        - Outgoing V4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                admissionTypeId:
+                  type: string
+                deliveryPlaceId:
+                  type: string
+                details:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      enabled:
+                        type: boolean
+                      executionDatetime:
+                        type: string
+                      phoneNumber:
+                        type: string
+                      quantity:
+                        type: number
+                      reasonDenyPhoneNumber:
+                        type: string
+                      scheduledDatetime:
+                        type: string
+                      serviceCode:
+                        type: string
+                      specializationCode:
+                        type: string
+                    required:
+                      - serviceCode
+                executionunitIdLab:
+                  type: string
+                personIdentifier:
+                  type: string
+                prescription:
+                  type: object
+                  properties:
+                    compilationDatetime:
+                      type: string
+                    diagnosisCode:
+                      type: string
+                    doctorIdentifier:
+                      type: string
+                    doctorType:
+                      type: string
+                    exemptionCode:
+                      type: string
+                    nreAccessType:
+                      type: string
+                    prescriptionNumber:
+                      type: string
+                    priorityClass:
+                      type: string
+                  required:
+                    - compilationDatetime
+                    - doctorIdentifier
+                    - doctorType
+                    - prescriptionNumber
+                    - priorityClass
+                prescriptionNRE:
+                  type: string
+                supplyModeCategoryId:
+                  type: string
+                branca:
+                  type: string
+                  description: Branca di riferimento dell'NRE
+              required:
+                - admissionTypeId
+                - deliveryPlaceId
+                - details
+                - executionunitIdLab
+                - personIdentifier
+                - supplyModeCategoryId
+        required: true
+      responses:
+        "200":
+          description: Default Response
+  /api/v4/orders:
+    patch:
+      summary: Modifica stato di un ordine
+      tags:
+        - Outgoing V4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: number
+                  description: Id di sistema con cui identificare l’ordine. Un ordine può essere
+                    creato a partire da un’accettazione diretta o da un
+                    appuntamento. per ottenere questo tipo di identificativo si
+                    consigli si usare i microservizi di competenza
+                orderStatus:
+                  type: string
+                  enum:
+                    - ACCETTATO
+                    - ANNULLATO
+                    - EROGATO
+                    - NON_EROGATO
+                  description: Stato da assegnare all'ordine (EROGATO, ANNULLATO, ACCETTATO,
+                    NON_EROGATO)
+                reasonId:
+                  type: string
+                  description: Identificativo motivazione del cambio di stato. Necessaria solo nel
+                    caso di stato NON_EROGATA
+              required:
+                - orderId
+                - orderStatus
         required: true
       responses:
         "200":
@@ -577,37 +954,44 @@ paths:
           application/json:
             schema:
               type: object
+              additionalProperties: false
               properties:
                 executionUnit:
                   type: object
-                  description: Oggetto dell'unità erogante
+                  description: Unita' erogante
                   properties:
                     doctors:
                       type: array
-                      description: Lista di dottori
+                      description: Lista dei dottori
                       items:
                         type: object
                         properties:
+                          firstName:
+                            type: string
+                            description: Nome medico
+                          lastName:
+                            type: string
+                            description: Cognome medico
                           endDate:
                             type: string
-                            description: Data di fine Unix epoch
+                            description: Fine validita' del dottore in formato Unix epoch
                           startDate:
                             type: string
-                            description: Data di inizio di Unix epoch
+                            description: Inizio validita' del dottore in formato Unix epoch
                           fiscalCode:
                             type: string
-                            description: Codice fiscale del dottore appartenete all'unita' erogante
+                            description: Codice fiscale del dottore
                           isPrimary:
                             type: boolean
-                            description: è primario?
                           roleCode:
                             type: string
                             description: Ruolo dottore appartenente all'unita' erogante
                         required:
+                          - firstName
+                          - lastName
                           - endDate
                           - startDate
                           - fiscalCode
-                          - roleCode
                     registry:
                       type: object
                       properties:
@@ -619,34 +1003,30 @@ paths:
                           description: Codice unita' erogante
                         description:
                           type: string
-                          description: Descrizione unita' erogante
+                          description: Descrizione dell'unità erogante
                         directAdmission:
                           type: boolean
                           description: Unità abilitata all'accettazione senza prenotazione
                         endDate:
                           type: string
-                          description: Data Fine validità Unita' Erogante
-                        id:
-                          type: string
-                          description: Id unita' erogante
+                          description: Fine validita' dell'unita' erogante
                         name:
                           type: string
-                          description: Nome unita' erogante
-                        idOperationUnit:
-                          type: string
-                          description: Id Unita' Operativa
+                          description: Nome dell'unita' erogante
                         notes:
                           type: string
-                          description: Note per l'unita' erogante
                         place:
                           type: string
                           description: Indirizzo Unita' Erogante
+                        idOperationUnit:
+                          type: string
+                          description: Id Unita' Operativa
                         specialization:
                           type: string
                           description: Branca unita' erogante
                         startDate:
                           type: string
-                          description: Data Inizio validità Unita' Erogante
+                          description: Data Inizio validità Unita' Erogante in formato Unix epoch
                         supplyModes:
                           type: array
                           description: Regimi di erogazione con relativo centro di costo
@@ -664,15 +1044,10 @@ paths:
                               - supplyModeType
                         type:
                           type: string
-                          enum:
-                            - AMBULATORIO
-                            - LABORATORIO
-                            - RADIOLOGIA
                           description: Tipo unita' erogante
                       required:
                         - description
                         - endDate
-                        - id
                         - name
                         - idOperationUnit
                         - specialization
@@ -687,10 +1062,10 @@ paths:
                         properties:
                           endDate:
                             type: string
-                            description: Data di fine validità prestazione
+                            description: Data di fine validita' prestazione in formato Unix epoch
                           startDate:
                             type: string
-                            description: Data di inizio validità prestazione
+                            description: Data di inizio validita' prestazione in formato Unix epoch
                           cur:
                             type: string
                             description: Codice catalogo unico regionale della prestazione
@@ -703,9 +1078,158 @@ paths:
                           - cur
                           - regionalNomenclatureCode
                   required:
-                    - doctors
                     - registry
                     - services
+                interni:
+                  type: object
+                  description: Oggetto contenente i campi interni da restituire alla struttura
+                    sanitaria
+              required:
+                - executionUnit
+        required: true
+      responses:
+        "200":
+          description: Default Response
+  /api/cup/executionUnit:
+    post:
+      summary: API per l'inserimento delle unità eroganti
+      tags:
+        - Cup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                executionUnit:
+                  type: object
+                  description: Unita' erogante
+                  properties:
+                    doctors:
+                      type: array
+                      description: Lista dei dottori
+                      items:
+                        type: object
+                        properties:
+                          firstName:
+                            type: string
+                            description: Nome medico
+                          lastName:
+                            type: string
+                            description: Cognome medico
+                          endDate:
+                            type: string
+                            description: Fine validita' del dottore in formato Unix epoch
+                          startDate:
+                            type: string
+                            description: Inizio validita' del dottore in formato Unix epoch
+                          fiscalCode:
+                            type: string
+                            description: Codice fiscale del dottore
+                          isPrimary:
+                            type: boolean
+                          roleCode:
+                            type: string
+                            description: Ruolo dottore appartenente all'unita' erogante
+                        required:
+                          - firstName
+                          - lastName
+                          - endDate
+                          - startDate
+                          - fiscalCode
+                    registry:
+                      type: object
+                      properties:
+                        automaticSupply:
+                          type: boolean
+                          description: Unità abilitata all'erogazione in fase di accettazione
+                        code:
+                          type: string
+                          description: Codice unita' erogante
+                        description:
+                          type: string
+                          description: Descrizione dell'unità erogante
+                        directAdmission:
+                          type: boolean
+                          description: Unità abilitata all'accettazione senza prenotazione
+                        endDate:
+                          type: string
+                          description: Fine validita' dell'unita' erogante
+                        name:
+                          type: string
+                          description: Nome dell'unita' erogante
+                        notes:
+                          type: string
+                        place:
+                          type: string
+                          description: Indirizzo Unita' Erogante
+                        idOperationUnit:
+                          type: string
+                          description: Id Unita' Operativa
+                        specialization:
+                          type: string
+                          description: Branca unita' erogante
+                        startDate:
+                          type: string
+                          description: Data Inizio validità Unita' Erogante in formato Unix epoch
+                        supplyModes:
+                          type: array
+                          description: Regimi di erogazione con relativo centro di costo
+                          items:
+                            type: object
+                            properties:
+                              costCenterId:
+                                type: string
+                                description: Id del centro di costo, associato al regime di erogazione
+                              supplyModeType:
+                                type: string
+                                description: Regime di erogazione
+                            required:
+                              - costCenterId
+                              - supplyModeType
+                        type:
+                          type: string
+                          description: Tipo unita' erogante
+                      required:
+                        - description
+                        - endDate
+                        - name
+                        - idOperationUnit
+                        - specialization
+                        - startDate
+                        - supplyModes
+                        - type
+                    services:
+                      type: array
+                      description: Prestazioni unita' erogante
+                      items:
+                        type: object
+                        properties:
+                          endDate:
+                            type: string
+                            description: Data di fine validita' prestazione in formato Unix epoch
+                          startDate:
+                            type: string
+                            description: Data di inizio validita' prestazione in formato Unix epoch
+                          cur:
+                            type: string
+                            description: Codice catalogo unico regionale della prestazione
+                          regionalNomenclatureCode:
+                            type: string
+                            description: Codice nomenclatore regionale della prestazione
+                        required:
+                          - endDate
+                          - startDate
+                          - cur
+                          - regionalNomenclatureCode
+                  required:
+                    - registry
+                    - services
+                interni:
+                  type: object
+                  description: Oggetto contenente i campi interni da restituire alla struttura
+                    sanitaria
               required:
                 - executionUnit
         required: true
@@ -968,6 +1492,12 @@ paths:
                       items:
                         type: object
                         properties:
+                          firstName:
+                            type: string
+                            description: Nome medico
+                          lastName:
+                            type: string
+                            description: Cognome medico
                           endDate:
                             type: string
                             description: Fine validita' del dottore in formato Unix epoch
@@ -983,6 +1513,8 @@ paths:
                             type: string
                             description: Ruolo dottore appartenente all'unita' erogante
                         required:
+                          - firstName
+                          - lastName
                           - endDate
                           - startDate
                           - fiscalCode
@@ -1018,6 +1550,9 @@ paths:
                         specialization:
                           type: string
                           description: Branca unita' erogante
+                        clinicSpecializationRegionalCode:
+                          type: string
+                          description: CUP LAZIO
                         startDate:
                           type: string
                           description: Data Inizio validità Unita' Erogante in formato Unix epoch
@@ -1114,6 +1649,12 @@ paths:
                       type: integer
                       description: Durata di default in minuti delle nuove prestazioni aggiunte
                         all'agenda
+                    maxAge:
+                      type: number
+                      description: Eta' minima del paziente (in mesi) per poter prenotare sull'agenda
+                    minAge:
+                      type: number
+                      description: Eta' massima del paziente (in mesi) per poter prenotare sull'agenda
                     diarySupplyModes:
                       type: array
                       description: Lista di regimi per l'agenda con indicazione del listino
@@ -1342,6 +1883,11 @@ paths:
                             items:
                               type: string
                             description: Lista identificativi delle risorse associate alla prestazione.
+                          supplyModes:
+                            type: array
+                            items:
+                              type: string
+                            description: CUP LAZIO
                           userNotes:
                             type: string
                             description: Note per l'utente CUP, apparira' all'operatore in fase di
@@ -1437,12 +1983,20 @@ paths:
                     visibility:
                       type: integer
                       description: Giorni di visibilita' agenda
+                    executionUnitIdLab:
+                      type: string
+                      description: Id del laboratiorio
+                    deliveryPlaceId:
+                      type: string
+                      description: Id dello spoke
                   required:
                     - accessModeId
                     - accessTypeId
                     - allCovers
                     - defaultFreeBookingDate
                     - defOrderDurationMins
+                    - maxAge
+                    - minAge
                     - diarySupplyModes
                     - forResidents
                     - freeForceEnabled
@@ -1609,6 +2163,18 @@ paths:
                                   description: Tempo necessario per l'esecuzione della prestazione
                                 id:
                                   type: string
+                                  description: CUP LAZIO
+                                name:
+                                  type: string
+                                  description: CUP LAZIO
+                                extracup:
+                                  type: boolean
+                                  description: CUP LAZIO
+                                online:
+                                  type: boolean
+                                  description: CUP LAZIO
+                                code:
+                                  type: string
                                   description: Id della prestazione
                                 priorityClasses:
                                   type: array
@@ -1624,7 +2190,7 @@ paths:
                                     possibile erogare questa prestazione
                               required:
                                 - duration
-                                - id
+                                - code
                                 - priorityClasses
                                 - supplyModes
                           overbook:
@@ -1694,7 +2260,9 @@ paths:
                             type: number
                         required:
                           - endTime
+                          - maxAge
                           - maxQuantity
+                          - minAge
                           - orders
                           - priorityClasses
                           - startTime
@@ -1855,6 +2423,153 @@ paths:
       responses:
         "200":
           description: Default Response
+  /api/cup/spoke:
+    post:
+      summary: API per la creazione di uno spoke
+      tags:
+        - Cup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                name:
+                  type: string
+                startDate:
+                  type: string
+                endDate:
+                  type: string
+                labs:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      executionUnitId:
+                        type: string
+                      services:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            curCode:
+                              type: string
+                            endDate:
+                              type: string
+                            startDate:
+                              type: string
+                          required:
+                            - curCode
+                            - endDate
+                            - startDate
+                    required:
+                      - executionUnitId
+                      - services
+                site:
+                  type: object
+                  properties:
+                    identifiedBy:
+                      type: string
+                    identifier:
+                      type: string
+                  required:
+                    - identifiedBy
+                    - identifier
+              required:
+                - code
+                - name
+                - startDate
+                - endDate
+        required: true
+      responses:
+        "200":
+          description: Default Response
+  /api/cup/spoke/updateLabs:
+    patch:
+      summary: API per modificare uno spoke
+      tags:
+        - Cup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                spokeCode:
+                  type: string
+                deliveryPlaceId:
+                  type: string
+                executionUnitId:
+                  type: string
+                nome:
+                  type: string
+                services:
+                  type: object
+                  properties:
+                    curCode:
+                      type: string
+                    endDate:
+                      type: string
+                    startDate:
+                      type: string
+                  required:
+                    - curCode
+                    - endDate
+                    - startDate
+              required:
+                - spokeCode
+                - deliveryPlaceId
+                - executionUnitId
+                - nome
+        required: true
+      responses:
+        "200":
+          description: Default Response
+  /api/cup/spoke/deleteLab:
+    delete:
+      summary: API per la cancellazione di un laboratirio relativo ad uno spoke
+      tags:
+        - Cup
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: deliveryPlaceId
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: executionUnitLabId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+  /api/cup/spoke/deleteService:
+    delete:
+      summary: API per la cancellazione di una prestazione relativa ad uno spoke
+      tags:
+        - Cup
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: deliveryPlaceId
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: executionUnitLabId
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: serviceId
+          required: true
+      responses:
+        "200":
+          description: Default Response
   /api/cup/structure:
     get:
       summary: Restituisce la struttura gerarchica dell'azienda
@@ -1986,6 +2701,12 @@ paths:
                   type: number
                   description: "Stato della sospensione: 0-> ABILITATA, 1-> DISABILITATA, 2->
                     ELIMINATA"
+                notes:
+                  type: string
+                  description: CUP LAZIO
+                id:
+                  type: string
+                  description: CUP LAZIO
                 operationUnitId:
                   type: string
                   description: Id unita' operativa
@@ -2015,6 +2736,9 @@ paths:
           description: Default Response
   "/api/cup/suspension/{suspensionId}":
     put:
+      summary: Modifica di una sospensione
+      tags:
+        - Cup
       requestBody:
         content:
           application/json:
@@ -2103,252 +2827,160 @@ paths:
       responses:
         "200":
           description: Default Response
-  /api/v4/process-apis/booking-management/bookings/notification:
-    post:
+    patch:
+      summary: Modifica di una sospensione (CUP LAZIO)
       tags:
-        - Incoming V4
-      responses:
-        "200":
-          description: Default Response
-  /api/v4/process-apis/booking-management/pre-bookings/notification:
-    post:
-      tags:
-        - Incoming V4
-      responses:
-        "200":
-          description: Default Response
-  "/api/v4/process-apis/booking-management/bookings/{bookingCode}":
-    delete:
-      tags:
-        - Incoming V4
-      parameters:
-        - schema:
-            type: string
-            minLength: 1
-          in: path
-          name: bookingCode
-          required: true
-      responses:
-        "200":
-          description: Default Response
-  /api/v4/process-apis/booking-management/bookings:
-    post:
-      tags:
-        - Incoming V4
-      responses:
-        "200":
-          description: Default Response
-  /api/v4/admission:
-    post:
-      summary: Notifica di accettazione
-      tags:
-        - Outgoing V4
+        - Cup
       requestBody:
         content:
           application/json:
             schema:
               type: object
               properties:
-                admissionTypeId:
+                suspensionId:
                   type: string
-                  description: Id tipologia di accettazione
-                details:
+                suspensionStatus:
+                  type: string
+      responses:
+        "200":
+          description: Default Response
+  /api/v4.1/process-apis/booking-management/bookings/notification:
+    post:
+      tags:
+        - Incoming V4
+      responses:
+        "200":
+          description: Default Response
+  /api/v4.1/process-apis/booking-management/bookings/move/notification:
+    post:
+      tags:
+        - Incoming V4
+      responses:
+        "200":
+          description: Default Response
+  /api/v4/bookingProcess/booking:
+    post:
+      summary: Prenotazione privato -> Cup (LAZIO)
+      tags:
+        - V4 Booking Process
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                availabilityDateTime:
+                  type: string
+                externalDiary:
+                  type: string
+                orderCURIds:
                   type: array
-                  description: Elenco dettagli prestazioni
                   items:
-                    type: object
-                    properties:
-                      bookingCode:
-                        type: string
-                        description: Eventuale codice della prenotazione
-                      executionDatetime:
-                        type: string
-                        description: Data/ora erogazione della prestazione in formato Unix epoch
-                      scheduledDatetime:
-                        type: string
-                        description: Data/ora di presunta erogazione in formato Unix epoch
-                      bookingDate:
-                        type: string
-                      phoneNumber:
-                        type: string
-                        description: Numero di telefono paziente per eventuali comunicazioni,
-                          obbligatorio se assente reasonDenyPhoneNumber
-                      quantity:
-                        type: number
-                        description: Quantita'
-                      reasonDenyPhoneNumber:
-                        type: string
-                        description: Motivazione indisponibilità numero di telefono
-                      serviceCode:
-                        type: string
-                        description: Codice prestazione
-                      specializationCode:
-                        type: string
-                        description: Branca della prestazione
-                    required:
-                      - executionDatetime
-                      - scheduledDatetime
-                      - serviceCode
-                directEntry:
-                  type: boolean
-                  description: Flag per indicare se accesso diretto
-                executionUnitId:
+                    type: string
+                supplyModeId:
                   type: string
-                  description: Identificativo di sistema dell'unità erogante
                 personIdentifier:
                   type: string
-                  description: "Codice Identificativo della persona: CF, ENI o STP"
-                prescription:
-                  type: object
-                  description: Informazioni relative alla ricetta
-                  properties:
-                    compilationDatetime:
-                      type: number
-                      description: Data compilazione ricetta in formato Unix epoch
-                    diagnosisCode:
-                      type: string
-                      description: Codice dell'eventuale diagnosi
-                    doctorIdentifier:
-                      type: string
-                      description: Codice fiscale medico che ha emesso la ricetta
-                    doctorType:
-                      type: string
-                      description: Tipologia del medico
-                    exemptionCode:
-                      type: string
-                      description: Identificativo ministeriale dell'eventuale esenzione
-                    nreAccessType:
-                      type: string
-                      enum:
-                        - ACCESSO_SUCCESSIVO
-                        - PRIMO_ACCESSO
-                      description: Tipo di accesso
-                    prescriptionNumber:
-                      type: string
-                      description: Numero ricetta
-                    priorityClass:
-                      type: string
-                      enum:
-                        - B
-                        - D
-                        - P
-                        - U
-                      description: Classe di priorita' della ricetta
-                  required:
-                    - compilationDatetime
-                    - doctorType
-                    - priorityClass
-                prescriptionNRE:
+                forceBooking:
+                  type: boolean
+                forceReasonId:
                   type: string
-                  description: Numero di ricetta elettronica, obbligatorio se assente l'oggetto
-                    prescription
-                site:
-                  type: object
-                  description: Informazioni della sede
-                  properties:
-                    identifiedBy:
-                      type: string
-                      description: Campo per indicare tipologia di indentificazione della sede
-                    identifier:
-                      type: string
-                      description: Codice identificativo della sede
-                  required:
-                    - identifiedBy
-                    - identifier
-                supplyModeCategoryId:
+                prescriptionNumber:
                   type: string
-                  description: Id categoria regime di erogazione.
+                status:
+                  type: string
               required:
-                - admissionTypeId
-                - details
+                - availabilityDateTime
+                - externalDiary
+                - orderCURIds
+                - supplyModeId
                 - personIdentifier
-                - site
-                - supplyModeCategoryId
+                - forceBooking
+                - prescriptionNumber
+                - status
         required: true
       responses:
         "200":
           description: Default Response
+  /api/v4/bookingProcess/delete:
     patch:
-      summary: Modifica lo stato dell'accettazione
+      summary: Cancellazione prenotazione privato -> Cup (LAZIO)
       tags:
-        - Outgoing V4
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                type: object
-                properties:
-                  admissionIdentification:
-                    type: object
-                    description: Rappresenta il tipo di codice identificativo e lo stesso codice
-                      utilizzati per identificare un'accettazione.
-                    properties:
-                      identifiedBy:
-                        type: string
-                        enum:
-                          - CODICE_ACCETTAZIONE
-                          - NUMERO_RICETTA
-                        description: Tipo di codice con cui identificare l'accettazione.
-                      identifier:
-                        type: string
-                        description: Identificativo dell'accettazione. Varia in base al tipo di
-                          identificativo scelto nel campo identifiedBy
-                    required:
-                      - identifiedBy
-                      - identifier
-                  admissionStatus:
-                    type: string
-                    enum:
-                      - DA_EROGARE
-                      - ELIMINATA
-                      - EROGATA
-                      - NON_EROGATA
-                      - PRESCRITTA
-                    description: Nuovo stato da assegnare all'accettazione.
-                  reasonId:
-                    type: integer
-                    description: Identificativo motivazione del cambio di stato. Necessaria solo nel
-                      caso di stato NON_EROGATA.
-                required:
-                  - admissionStatus
-      responses:
-        "200":
-          description: Default Response
-  /api/v4/orders:
-    patch:
-      summary: Modifica stato di un ordine
-      tags:
-        - Outgoing V4
+        - V4 Booking Process
       requestBody:
         content:
           application/json:
             schema:
               type: object
               properties:
-                orderId:
-                  type: number
-                  description: Id di sistema con cui identificare l’ordine. Un ordine può essere
-                    creato a partire da un’accettazione diretta o da un
-                    appuntamento. per ottenere questo tipo di identificativo si
-                    consigli si usare i microservizi di competenza
-                orderStatus:
+                bookingStatus:
                   type: string
-                  enum:
-                    - ACCETTATO
-                    - ANNULLATO
-                    - EROGATO
-                    - NON_EROGATO
-                  description: Stato da assegnare all'ordine (EROGATO, ANNULLATO, ACCETTATO,
-                    NON_EROGATO)
+                identifiedBy:
+                  type: string
+                identifier:
+                  type: string
                 reasonId:
-                  type: string
-                  description: Identificativo motivazione del cambio di stato. Necessaria solo nel
-                    caso di stato NON_EROGATA
+                  type: integer
               required:
-                - orderId
-                - orderStatus
+                - bookingStatus
+                - identifiedBy
+                - identifier
+        required: true
+      responses:
+        "200":
+          description: Default Response
+  /api/v4/bookingProcess/move:
+    post:
+      summary: Spostamento prenotazione privato -> Cup (LAZIO)
+      tags:
+        - V4 Booking Process
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                availabilityDateTime:
+                  type: string
+                externalDiary:
+                  type: string
+                orderCURIds:
+                  type: array
+                  items:
+                    type: string
+                forceBooking:
+                  type: boolean
+                forceReasonId:
+                  type: string
+                movingNotes:
+                  type: string
+                movingReasonId:
+                  type: string
+                oldBookingIdentifiedBy:
+                  type: string
+                oldBookingIdentifier:
+                  type: string
+                personId:
+                  type: string
+                prescriptionNumber:
+                  type: string
+                status:
+                  type: string
+                supplyModeId:
+                  type: string
+              required:
+                - availabilityDateTime
+                - externalDiary
+                - orderCURIds
+                - forceBooking
+                - movingNotes
+                - movingReasonId
+                - oldBookingIdentifiedBy
+                - oldBookingIdentifier
+                - personId
+                - prescriptionNumber
+                - status
+                - supplyModeId
         required: true
       responses:
         "200":
@@ -2356,6 +2988,53 @@ paths:
   /api/log/groups/:
     get:
       responses: {}
+  /api/log/login/:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              required:
+                - username
+                - password
+        required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    default: false
+                  code:
+                    type: string
+                    default: ""
+                  msg:
+                    type: string
+                    default: ok
+                  data:
+                    nullable: true
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                      ruolo:
+                        type: string
+                        enum:
+                          - ADMIN
+                          - READ_OPERATOR
+                          - DEVELOPER
+                          - OPERATORE
   /api/log/infologs/:
     get:
       parameters:
@@ -2393,6 +3072,11 @@ paths:
             type: string
           in: query
           name: string
+          required: false
+        - schema:
+            type: boolean
+          in: query
+          name: daInviare
           required: false
       responses:
         "200":
@@ -2447,6 +3131,8 @@ paths:
                               type: string
                               format: date-time
                               nullable: true
+                            reinviata:
+                              type: boolean
   /api/log/infologs/success:
     get:
       parameters:
@@ -2484,6 +3170,11 @@ paths:
             type: string
           in: query
           name: string
+          required: false
+        - schema:
+            type: boolean
+          in: query
+          name: daInviare
           required: false
       responses:
         "200":
@@ -2564,6 +3255,11 @@ paths:
           in: query
           name: string
           required: false
+        - schema:
+            type: boolean
+          in: query
+          name: daInviare
+          required: false
       responses:
         "200":
           description: Default Response
@@ -2605,7 +3301,7 @@ paths:
                               type: string
                               format: date-time
                               nullable: true
-  /api/log/infologs/statistics:
+  /api/log/infologs/retry:
     get:
       parameters:
         - schema:
@@ -2625,24 +3321,29 @@ paths:
           in: query
           name: dataFine
           required: false
-      responses: {}
-  /api/log/login/:
-    post:
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              additionalProperties: false
-              properties:
-                username:
-                  type: string
-                password:
-                  type: string
-              required:
-                - username
-                - password
-        required: true
+        - schema:
+            type: integer
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+        - schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+          in: query
+          name: limit
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: string
+          required: false
+        - schema:
+            type: boolean
+          in: query
+          name: daInviare
+          required: false
       responses:
         "200":
           description: Default Response
@@ -2664,14 +3365,114 @@ paths:
                     nullable: true
                     type: object
                     properties:
-                      token:
-                        type: string
-                      ruolo:
-                        type: string
-                        enum:
-                          - ADMIN
-                          - READ_OPERATOR
-                          - DEVELOPER
+                      totalRecords:
+                        type: integer
+                      records:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                            method:
+                              type: string
+                            operation:
+                              type: string
+                            url:
+                              type: string
+                            header:
+                              type: object
+                              nullable: true
+                            body:
+                              type: array
+  /api/log/infologs/statistics:
+    get:
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: idGruppo
+          required: true
+        - schema:
+            type: string
+            format: date-time
+          in: query
+          name: dataInizio
+          required: false
+        - schema:
+            type: string
+            format: date-time
+          in: query
+          name: dataFine
+          required: false
+      responses: {}
+  "/api/log/retry/outgoing/{name}":
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                _id:
+                  type: string
+                method:
+                  type: string
+                operation:
+                  type: string
+                url:
+                  type: string
+                header:
+                  type: object
+                  nullable: true
+                body:
+                  type: array
+              required:
+                - method
+                - operation
+                - url
+                - body
+        required: true
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: name
+          required: true
+      responses:
+        "200":
+          description: Default Response
+  /api/log/retry/incoming:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sezione:
+                  type: string
+                idGruppo:
+                  type: string
+                descrizioneEvento:
+                  type: string
+                username:
+                  type: string
+                ip:
+                  type: string
+                userAgent:
+                  type: string
+                dataOra:
+                  type: string
+                stato:
+                  type: string
+                idRisorsa:
+                  type: string
+                operation:
+                  type: string
+      responses:
+        "200":
+          description: Default Response
   /api/log/roles/:
     get:
       responses:
@@ -2703,6 +3504,8 @@ paths:
                         value: READ_OPERATOR
                       DEVELOPER:
                         value: DEVELOPER
+                      OPERATORE:
+                        value: OPERATORE
   /api/log/structures/:
     get:
       parameters:
@@ -2763,6 +3566,8 @@ paths:
                               type: string
                             nsisCode:
                               type: string
+                            baseUrl:
+                              type: string
                             endPointPrenotazione:
                               type: string
                             endPointPreAppuntamento:
@@ -2788,6 +3593,8 @@ paths:
               type: object
               properties:
                 name:
+                  type: string
+                baseUrl:
                   type: string
                 endPointPrenotazione:
                   type: string
@@ -2906,6 +3713,7 @@ paths:
                     - ADMIN
                     - READ_OPERATOR
                     - DEVELOPER
+                    - OPERATORE
               required:
                 - username
                 - password
@@ -2952,6 +3760,7 @@ paths:
                       - ADMIN
                       - READ_OPERATOR
                       - DEVELOPER
+                      - OPERATORE
     get:
       parameters:
         - schema:
@@ -3047,6 +3856,7 @@ paths:
                     - ADMIN
                     - READ_OPERATOR
                     - DEVELOPER
+                    - OPERATORE
               required:
                 - username
                 - password
@@ -3081,6 +3891,7 @@ paths:
                       - ADMIN
                       - READ_OPERATOR
                       - DEVELOPER
+                      - OPERATORE
 tags:
   - name: Cup
     description: API di configurazione delle strutture sul CUP regionale
